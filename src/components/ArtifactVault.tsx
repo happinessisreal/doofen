@@ -3,33 +3,16 @@ import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { type ActiveItem } from './ServiceDrawer';
+import { PRODUCTS, type Product } from '../data/products';
 
 interface ArtifactVaultProps {
   onSelectProduct: (item: ActiveItem) => void;
 }
 
-const PRODUCTS = [
-  {
-    name: "Content Creation",
-    desc: "Strategic multimedia content pipelines for audience engagement and brand authority.",
-    position: [-1.8, -1.4, 1.0] as [number, number, number],
-  },
-  {
-    name: "Animation",
-    desc: "Cinematic motion design and visual storytelling at production scale.",
-    position: [0, -1.4, 2.0] as [number, number, number],
-  },
-  {
-    name: "Explainer",
-    desc: "Complex-to-clear explainer videos that drive understanding and conversion.",
-    position: [1.8, -1.4, 1.0] as [number, number, number],
-  }
-];
-
 const GEOMETRIES = ['dodecahedron', 'torusKnot', 'icosahedron'] as const;
 
 interface ArtifactProps {
-  product: typeof PRODUCTS[0];
+  product: Product;
   index: number;
   onSelect: (item: ActiveItem) => void;
 }

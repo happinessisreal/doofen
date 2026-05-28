@@ -1,33 +1,16 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { type ActiveItem } from './ServiceDrawer';
+import { SERVICES, type Service } from '../data/services';
 
 interface FloatingServicesProps {
   onSelectService: (item: ActiveItem) => void;
 }
 
-export const SERVICES = [
-  { name: "Website Building", desc: "Full-stack digital presence engineering with cutting-edge frameworks." },
-  { name: "Maintenance", desc: "Continuous system calibration and uptime assurance." },
-  { name: "Niche Tech", desc: "Specialized technology solutions for unique operational needs." },
-  { name: "Training Material", desc: "Instructional design and pedagogical blueprint creation." },
-  { name: "Games", desc: "Interactive entertainment experiences and gamification systems." },
-  { name: "Animation", desc: "Frame-by-frame motion design and cinematic visual production." },
-  { name: "Content Creation", desc: "Strategic multimedia content for audience engagement." },
-  { name: "Explainer", desc: "Complex-to-clear cinematic explainers for products and services." },
-  { name: "Research", desc: "Deep analytical investigation and data-driven insights." },
-  { name: "Research Publication", desc: "Academic publication strategy and consultancy." },
-  { name: "App Building", desc: "Native and cross-platform application development." },
-  { name: "ML", desc: "Machine learning pipelines and predictive model integration." },
-  { name: "Political Campaign", desc: "Digital strategy for political outreach and engagement." },
-  { name: "Digital Marketing", desc: "Full-funnel marketing campaigns across digital channels." },
-  { name: "SEO", desc: "Search engine dominance through technical and content optimization." }
-];
-
 interface ServiceNodeProps {
-  service: typeof SERVICES[0];
+  service: Service;
   index: number;
   total: number;
   onSelect: (item: ActiveItem) => void;

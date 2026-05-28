@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SERVICES } from '../data/services';
+---
+
+<Layout title="Services — Doofenshmirtz Evil Inc." description="From machine learning to political campaigns — the full service stack of Doofenshmirtz Evil Inc.">
+  <div class="page">
+    <header class="page-hero">
+      <span class="section-label" data-reveal>What We Do</span>
+      <h1 class="section-heading hero-heading">From Code to Campaign</h1>
+      <p class="section-body" data-reveal style="max-width: 640px;">
+        Everything an establishment needs to exist, compete, and quietly take over its category online — engineered in-house, end to end. Pick a discipline, or stack them.
+      </p>
+    </header>
+
+    <div class="card-grid">
+      {SERVICES.map((s, i) => (
+        <article class="card" data-reveal-scroll>
+          <span class="card-index">{String(i + 1).padStart(2, '0')}</span>
+          <h2 class="card-title">{s.name}</h2>
+          <p class="card-desc">{s.desc}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="page-cta">
+      <p class="section-body">Not sure which you need? That's what the first conversation is for.</p>
+      <a href="/contact" class="cta cta-primary" data-magnetic>Engage Us</a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { initSite } from '../scripts/site';
+  initSite();
+</script>

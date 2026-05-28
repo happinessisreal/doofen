@@ -1,108 +1,82 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { MonolithExperience } from '../components/MonolithExperience';
+import { SERVICES } from '../data/services';
+import { PRODUCTS } from '../data/products';
+
+const featuredServices = SERVICES.slice(0, 6);
 ---
 
 <Layout title="Doofenshmirtz Evil Inc. — The Digital Monolith">
   <MonolithExperience client:only="react" />
 
-  <!-- Fixed background kinetic tagline -->
+  <!-- Fixed background kinetic wordmark -->
   <div class="fixed-tagline">
-    <h1 id="kinetic-tagline">Techno-cultural Partner for Establishments</h1>
+    <h1 id="kinetic-tagline">Doofenshmirtz</h1>
   </div>
 
   <!-- Scroll Container -->
   <div class="scroll-container">
 
-    <!-- Hero / Monolith intro -->
-    <section class="section-panel" id="about" style="height: 100vh; display: flex; align-items: flex-end; padding-bottom: 4rem;">
+    <!-- Hero -->
+    <section class="section-panel" id="hero" style="height: 100vh; display: flex; align-items: flex-end; padding-bottom: 4rem;">
       <div class="section-content">
-        <span class="section-label">Doofenshmirtz Evil Inc.</span>
-        <h2 class="section-heading">Building the Digital Monolith</h2>
-        <p class="section-body">
-          A spatial, zero-gravity computational construct engineered for establishments seeking digital dominance across every channel and platform.
+        <span class="section-label" data-reveal>Doofenshmirtz Evil Inc.</span>
+        <h2 class="section-heading hero-heading">Techno-Cultural Partner for Establishments</h2>
+        <p class="section-body" data-reveal>
+          Part laboratory, part design studio. We engineer the digital machinery establishments use to take over their corner of the world — websites, campaigns, films, and the strange custom tech in between, built with precision and an unreasonable amount of taste.
         </p>
-        <span class="section-meta">Scroll to explore the tower</span>
+        <div class="hero-cta-row" data-reveal>
+          <a href="/contact" class="cta cta-primary" data-magnetic>Engage Us</a>
+          <a href="/work" class="cta" data-magnetic>See the Work</a>
+        </div>
+        <div class="scroll-cue" data-reveal>
+          <span class="scroll-cue-label">Scroll to explore</span>
+          <span class="scroll-cue-track"><span class="scroll-cue-dot"></span></span>
+        </div>
       </div>
     </section>
 
-    <!-- Services -->
-    <section class="section-panel" id="services" style="height: 120vh; display: flex; align-items: center;">
-      <div class="section-content right">
+    <!-- Services teaser -->
+    <section class="section-panel" id="services-teaser" style="height: 110vh; display: flex; align-items: center;">
+      <div class="section-content right" data-reveal-scroll>
         <span class="section-label">What We Do</span>
-        <h2 class="section-heading">15 Core Services</h2>
+        <h2 class="section-heading">From Code to Campaign</h2>
         <p class="section-body">
-          From machine learning to political campaigns, our services orbit your goals in perfect synchronization. Hover the floating nodes to explore each one.
+          Machine learning, marketing, films, full product builds, the occasional political campaign — if it lives on a screen or moves a crowd, we make it.
         </p>
         <div class="services-grid">
-          <span>Website Building</span>
-          <span>App Building</span>
-          <span>Machine Learning</span>
-          <span>SEO</span>
-          <span>Digital Marketing</span>
-          <span>Animation</span>
-          <span>Content Creation</span>
-          <span>Explainer</span>
-          <span>Research</span>
-          <span>Publication Consultancy</span>
-          <span>Political Campaign</span>
-          <span>Training Material</span>
-          <span>Niche Tech</span>
-          <span>Games</span>
-          <span>Maintenance</span>
+          {featuredServices.map((s) => <span>{s.name}</span>)}
         </div>
+        <a href="/services" class="cta" data-magnetic style="margin-top: 1.75rem;">All Services</a>
       </div>
     </section>
 
-    <!-- Products -->
-    <section class="section-panel" id="products" style="height: 120vh; display: flex; align-items: center;">
-      <div class="section-content">
+    <!-- Work teaser -->
+    <section class="section-panel" id="work-teaser" style="height: 110vh; display: flex; align-items: center;">
+      <div class="section-content" data-reveal-scroll>
         <span class="section-label">Artifact Vault</span>
-        <h2 class="section-heading">3 Core Products</h2>
+        <h2 class="section-heading">Flagship Artifacts</h2>
         <p class="section-body">
-          Our three flagship products float at the base of the tower. Click the 3D shapes to view detailed schematics for each.
+          A few pieces of work we keep behind glass. Click the shapes orbiting the monolith, or pull the full schematics.
         </p>
         <div class="services-grid" style="grid-template-columns: 1fr;">
-          <span>Content Creation — Strategic multimedia pipelines</span>
-          <span>Animation — Cinematic motion design at scale</span>
-          <span>Explainer — Complex-to-clear video production</span>
+          {PRODUCTS.map((p) => <span>{p.name} — {p.desc}</span>)}
         </div>
+        <a href="/work" class="cta" data-magnetic style="margin-top: 1.75rem;">View Work</a>
       </div>
     </section>
 
-    <!-- About / Establishment -->
-    <section class="about-section" id="establishment">
-      <div class="about-col">
-        <div>
-          <h3 class="about-heading">The Blueprint</h3>
-          <p class="about-text">
-            Our mandate: merge techno-cultural design with unmatched administrative precision. By utilizing spatial technology we achieve unprecedented influence margins across the Tri-State area and beyond.
-          </p>
-        </div>
-        <div class="about-meta-box">
-          Sector: Tri-State Region<br />
-          Founded: Danville, USA<br />
-          Status: Actively Dominating
-        </div>
-      </div>
-
-      <div class="about-col">
-        <div>
-          <h3 class="about-heading">Establishment Engagement</h3>
-          <p class="about-text">
-            Whether launching marketing offensives or commissioning complex training algorithms, Doofenshmirtz Evil Inc. handles the complete design and integration pipeline from concept to deployment.
-          </p>
-        </div>
-
-        <div class="about-contact-grid">
-          <div>
-            <h4>Direct Line</h4>
-            <p>director@doofenshmirtz-evil.inc</p>
-          </div>
-          <div>
-            <h4>Headquarters</h4>
-            <p>Doofenshmirtz Evil Inc. Building, Danville</p>
-          </div>
+    <!-- Contact band -->
+    <section class="section-panel" id="contact-band" style="height: 90vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+      <div class="section-content" style="max-width: 720px; margin: 0 auto; background: rgba(0,0,0,0.55);" data-reveal-scroll>
+        <span class="section-label" style="display:block; text-align:center;">Engagement</span>
+        <h2 class="section-heading" style="text-align:center;">Let's Build Something Unreasonable</h2>
+        <p class="section-body" style="text-align:center;">
+          Tell us what your establishment is trying to become. We'll bring the machinery.
+        </p>
+        <div class="hero-cta-row" style="justify-content:center;">
+          <a href="/contact" class="cta cta-primary" data-magnetic>Engage Us</a>
         </div>
       </div>
     </section>
@@ -113,10 +87,11 @@ import { MonolithExperience } from '../components/MonolithExperience';
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { initSite, initScrollCue } from '../scripts/site';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // Camera scroll progress
+  // GSAP drives the scroll-linked 3D camera + the kinetic wordmark parallax.
   ScrollTrigger.create({
     trigger: '.scroll-container',
     start: 'top top',
@@ -124,10 +99,9 @@ import { MonolithExperience } from '../components/MonolithExperience';
     scrub: 0.5,
     onUpdate: (self) => {
       (window as any).scrollProgress = self.progress;
-    }
+    },
   });
 
-  // Kinetic tagline parallax
   gsap.to('#kinetic-tagline', {
     scrollTrigger: {
       trigger: '.scroll-container',
@@ -137,21 +111,10 @@ import { MonolithExperience } from '../components/MonolithExperience';
     },
     xPercent: -12,
     rotate: -1,
-    opacity: 0.12
+    opacity: 0.12,
   });
 
-  // Fade in section panels as they enter viewport
-  document.querySelectorAll('.section-content').forEach((el) => {
-    gsap.from(el, {
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 85%',
-        toggleActions: 'play none none reverse',
-      },
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power2.out',
-    });
-  });
+  // anime.js entrance + reveals + magnetic + progress bar (shared across pages).
+  initSite();
+  initScrollCue();
 </script>

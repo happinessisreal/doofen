@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const channels = [
+  { label: 'Direct Line', value: 'director@doofenshmirtz-evil.inc', href: 'mailto:director@doofenshmirtz-evil.inc' },
+  { label: 'Headquarters', value: 'Doofenshmirtz Evil Inc. Building, Danville' },
+  { label: 'Hours', value: 'Whenever the scheme demands it' },
+  { label: 'Sector', value: 'Tri-State Region & beyond' },
+];
+---
+
+<Layout title="Contact — Doofenshmirtz Evil Inc." description="Engage Doofenshmirtz Evil Inc. — start a project, commission an artifact, or plot something larger.">
+  <div class="page">
+    <header class="page-hero">
+      <span class="section-label" data-reveal>Engagement</span>
+      <h1 class="section-heading hero-heading">Let's Build Something Unreasonable</h1>
+      <p class="section-body" data-reveal style="max-width: 640px;">
+        Tell us what your establishment is trying to become and we'll bring the machinery. Campaigns, builds, films, or schemes that don't have a name yet — start here.
+      </p>
+    </header>
+
+    <div class="contact-layout">
+      <div class="contact-invite" data-reveal-scroll>
+        <h2 class="about-heading">Open a Channel</h2>
+        <p class="about-text">
+          The fastest way in is a direct line. Send the shape of the problem; we'll send back the shape of a solution.
+        </p>
+        <a href="mailto:director@doofenshmirtz-evil.inc?subject=Engagement%20Request" class="cta cta-primary" data-magnetic style="margin-top: 1.5rem;">Start a Project</a>
+      </div>
+
+      <div class="contact-channels" data-reveal-scroll>
+        {channels.map((c) => (
+          <div class="contact-channel">
+            <h3>{c.label}</h3>
+            {c.href ? <a href={c.href} class="contact-value-link">{c.value}</a> : <p>{c.value}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { initSite } from '../scripts/site';
+  initSite();
+</script>

@@ -10,6 +10,16 @@ const {
   title,
   description = "Doofenshmirtz Evil Inc. — Techno-cultural partner for establishments. Edge-ready digital solutions and spatial installations."
 } = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const navItems = [
+  { href: '/services', label: 'Services' },
+  { href: '/work', label: 'Work' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -25,22 +35,31 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+
+    <!-- Mark JS as active so anime.js reveal states apply (prevents flash-of-content) -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
+    <div class="scroll-progress" id="scroll-progress"></div>
     <div class="grid-bg"></div>
+    <div class="hero-glow"></div>
     <div class="noise-overlay"></div>
 
     <!-- Minimal top bar -->
     <header class="site-header" id="main-header">
-      <div class="header-left">
-        <span class="header-logo">DE</span>
-        <span class="header-brand">Doofenshmirtz Evil Inc.</span>
-      </div>
+      <a href="/" class="header-left" aria-label="Doofenshmirtz Evil Inc. — Home">
+        <span class="header-logo" data-reveal>DE</span>
+        <span class="header-brand" data-reveal>Doofenshmirtz Evil Inc.</span>
+      </a>
       <nav class="header-nav-links" aria-label="Main Navigation">
-        <a href="#about" class="nav-link">About</a>
-        <a href="#services" class="nav-link">Services</a>
-        <a href="#products" class="nav-link">Products</a>
-        <a href="#contact" class="nav-link">Contact</a>
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={["nav-link", { active: isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            data-reveal
+          >{item.label}</a>
+        ))}
       </nav>
     </header>
 
@@ -49,19 +68,24 @@ const {
     </main>
 
     <!-- Footer -->
-    <footer class="site-footer" id="contact">
+    <footer class="site-footer">
       <div class="footer-inner">
         <div class="footer-col">
           <span class="footer-label">Doofenshmirtz Evil Inc.</span>
           <span class="footer-sub">Techno-cultural Partner for Establishments</span>
         </div>
+        <nav class="footer-nav" aria-label="Footer Navigation">
+          {navItems.map((item) => (
+            <a href={item.href} class="footer-link">{item.label}</a>
+          ))}
+        </nav>
         <div class="footer-col footer-col-right">
           <span class="footer-label">Get in Touch</span>
           <span class="footer-sub">director@doofenshmirtz-evil.inc</span>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© {new Date().getFullYear()} Doofenshmirtz Evil Inc. All rights reserved.</span>
+        <span>© {year} Doofenshmirtz Evil Inc. All rights reserved.</span>
       </div>
     </footer>
   </body>

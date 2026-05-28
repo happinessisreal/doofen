@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About — Doofenshmirtz Evil Inc." description="The blueprint behind Doofenshmirtz Evil Inc. — a techno-cultural partner for establishments.">
+  <div class="page">
+    <header class="page-hero">
+      <span class="section-label" data-reveal>The Establishment</span>
+      <h1 class="section-heading hero-heading">A Techno-Cultural Operation</h1>
+      <p class="section-body" data-reveal style="max-width: 640px;">
+        We sit where engineering discipline meets cultural instinct — building the systems, stories, and spectacles that move establishments forward.
+      </p>
+    </header>
+
+    <section class="about-section about-section--page">
+      <div class="about-col" data-reveal-scroll>
+        <div>
+          <h2 class="about-heading">The Blueprint</h2>
+          <p class="about-text">
+            Our mandate: merge techno-cultural design with unmatched administrative precision. By utilizing spatial technology we achieve unprecedented influence margins across the Tri-State area and beyond.
+          </p>
+        </div>
+        <div class="about-meta-box">
+          Sector: Tri-State Region<br />
+          Founded: Danville, USA<br />
+          Status: Actively Dominating
+        </div>
+      </div>
+
+      <div class="about-col" data-reveal-scroll>
+        <div>
+          <h2 class="about-heading">Establishment Engagement</h2>
+          <p class="about-text">
+            Whether launching marketing offensives or commissioning complex training algorithms, Doofenshmirtz Evil Inc. handles the complete design and integration pipeline from concept to deployment.
+          </p>
+        </div>
+
+        <div class="about-contact-grid">
+          <div>
+            <h3>Direct Line</h3>
+            <p>director@doofenshmirtz-evil.inc</p>
+          </div>
+          <div>
+            <h3>Headquarters</h3>
+            <p>Doofenshmirtz Evil Inc. Building, Danville</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-cta">
+      <p class="section-body">Ready to put the machinery to work?</p>
+      <a href="/contact" class="cta cta-primary" data-magnetic>Engage Us</a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { initSite } from '../scripts/site';
+  initSite();
+</script>

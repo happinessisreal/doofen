@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Tower } from './Tower';
+import { MonolithModel } from './MonolithModel';
 import { FloatingServices } from './FloatingServices';
 import { ArtifactVault } from './ArtifactVault';
 import { type ActiveItem } from './ServiceDrawer';
@@ -62,12 +62,19 @@ export const MonolithCanvas: React.FC<MonolithCanvasProps> = ({ onSelectItem }) 
       gl={{ antialias: true, alpha: true }}
       dpr={[1, isMobile ? 1.5 : 2]}
     >
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.6} />
+      <hemisphereLight args={['#b794d6', '#1a0f2e', 0.5]} />
+      {/* Neutral key light so the model's surfaces read clearly */}
+      <directionalLight position={[5, 8, 6]} intensity={1.4} color="#ffffff" />
+      {/* Violet accent / rim lights for the aesthetic */}
       <pointLight position={[10, 10, 10]} intensity={1.5} color="#7D53B2" />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#9d77d1" />
+      <pointLight position={[-10, -6, -10]} intensity={1.2} color="#9d77d1" />
+      <pointLight position={[0, -4, 4]} intensity={0.6} color="#c9aef0" />
 
       <CameraController />
-      <Tower />
+      <Suspense fallback={null}>
+        <MonolithModel />
+      </Suspense>
       <FloatingServices onSelectService={onSelectItem} />
       <ArtifactVault onSelectProduct={onSelectItem} />
     </Canvas>
