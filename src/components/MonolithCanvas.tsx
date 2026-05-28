@@ -60,16 +60,15 @@ export const MonolithCanvas: React.FC<MonolithCanvasProps> = ({ onSelectItem }) 
       }}
       style={{ background: 'transparent' }}
       gl={{ antialias: true, alpha: true }}
+      flat
       dpr={[1, isMobile ? 1.5 : 2]}
     >
+      {/* Flat, even lighting to emulate Blender's "Solid" viewport studio light.
+          Kept modest so material colours render at true saturation instead of
+          clipping to white (tone mapping is off, so bright values hard-clip). */}
       <ambientLight intensity={0.6} />
-      <hemisphereLight args={['#b794d6', '#1a0f2e', 0.5]} />
-      {/* Neutral key light so the model's surfaces read clearly */}
-      <directionalLight position={[5, 8, 6]} intensity={1.4} color="#ffffff" />
-      {/* Violet accent / rim lights for the aesthetic */}
-      <pointLight position={[10, 10, 10]} intensity={1.5} color="#7D53B2" />
-      <pointLight position={[-10, -6, -10]} intensity={1.2} color="#9d77d1" />
-      <pointLight position={[0, -4, 4]} intensity={0.6} color="#c9aef0" />
+      <hemisphereLight args={['#ffffff', '#8a8a95', 0.35]} />
+      <directionalLight position={[2, 5, 5]} intensity={0.5} color="#ffffff" />
 
       <CameraController />
       <Suspense fallback={null}>
