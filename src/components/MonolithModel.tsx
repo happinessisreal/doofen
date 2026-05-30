@@ -7,8 +7,24 @@ useGLTF.preload('/monolith.glb');
 
 const TARGET_SIZE = 3.6; // largest dimension in world units (fits inside the service orbit)
 
+// ── Powering-up reveal tuning ──
+const REVEAL_WINDOW = 1.6; // span over which meshes begin lighting up (base → top)
+const DRAW_DURATION = 0.95; // time each mesh takes to finish tracing its edges
+const SPIN_SPEED = 0.1; // slow, stately idle rotation (rad/s)
+
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+interface WirePart {
+  geometry: THREE.BufferGeometry;
+  count: number; // total line vertices
+  delay: number; // seconds before this part starts drawing
+}
+
 export const MonolithModel: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
+  const wireMatRef = useRef<THREE.LineBasicMaterial | null>(null);
+  const wirePartsRef = useRef<WirePart[]>([]);
+  const powerStart = useRef<number | null>(null);
   const { scene } = useGLTF('/monolith.glb');
 
   // Clone the loaded scene, recenter it on the origin, and compute a fit scale.
@@ -20,55 +36,52 @@ export const MonolithModel: React.FC = () => {
 
     // Translate in the model's own units so its center sits at the local origin.
     cloned.position.sub(center);
+    cloned.updateMatrixWorld(true);
 
     // Collect meshes first; adding children mid-traverse would mutate the tree.
     const meshes: THREE.Mesh[] = [];
     cloned.traverse((obj) => {
       const mesh = obj as THREE.Mesh;
-      if (mesh.isMesh) {
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        meshes.push(mesh);
-      }
+      if (mesh.isMesh) meshes.push(mesh);
     });
 
-    // Keep the model's authored materials (purple dome, blue-grey walls, teal
-    // signage) and overlay a wireframe on each mesh's structural edges — matching
-    // how the model reads in Blender's viewport.
+    // Wireframe-only rendering tinted in the site's violet theme
+    // (--color-violet-bright, #b794d6). Surfaces are hidden; only the structural
+    // edges render, drawn as glowing violet lines.
     const wireMat = new THREE.LineBasicMaterial({
-      color: 0x000000,
+      color: 0xb794d6,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.85,
     });
-    for (const mesh of meshes) {
-      if (!mesh.geometry) continue;
+    wireMatRef.current = wireMat;
 
-      // Blender "Solid" shading = flat lighting + basic (non-PBR, non-specular)
-      // surface shading. Replace the PBR material with a flat-shaded Lambert one
-      // that keeps each material's base colour (purple dome, blue-grey walls,
-      // teal windows) but drops specular highlights and metalness.
-      const orig = mesh.material as THREE.MeshStandardMaterial;
-      let color = orig && orig.color ? orig.color.clone() : new THREE.Color(0xb6b6be);
+    // Build each mesh's wireframe and record its base height so the reveal can
+    // climb the monolith from the ground up — a more majestic "powering on".
+    const wpos = new THREE.Vector3();
+    const built = meshes
+      .filter((m) => m.geometry)
+      .map((mesh) => {
+        mesh.material = new THREE.MeshBasicMaterial({ visible: false });
 
-      // The sign backing ("Panel") exported with no base colour, so glTF renders
-      // it white — restore the green it has in Blender.
-      if (orig && orig.name === 'Panel') color = new THREE.Color(0x4aa06e);
+        // EdgesGeometry (low threshold) keeps clean topology, hiding triangulation.
+        const wireGeo = new THREE.EdgesGeometry(mesh.geometry, 1);
+        const wire = new THREE.LineSegments(wireGeo, wireMat);
+        wire.frustumCulled = false;
+        wireGeo.setDrawRange(0, 0); // start blank; useFrame traces it on
+        mesh.add(wire);
 
-      // X-Ray at 0.5: half-transparent surfaces with depth-write off, so the
-      // model reads see-through like Blender's X-Ray toggle.
-      mesh.material = new THREE.MeshLambertMaterial({
-        color,
-        flatShading: true,
-        transparent: true,
-        opacity: 0.5,
-        depthWrite: false,
+        mesh.getWorldPosition(wpos);
+        return { wireGeo, count: wireGeo.getAttribute('position').count, y: wpos.y };
       });
 
-      // EdgesGeometry with a low threshold shows all structural edges while
-      // hiding coplanar triangulation — i.e. the clean topology, like Blender.
-      const wire = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 1), wireMat);
-      mesh.add(wire);
-    }
+    // Order parts bottom → top and spread their start times across the window.
+    built.sort((a, b) => a.y - b.y);
+    const n = Math.max(built.length - 1, 1);
+    wirePartsRef.current = built.map((b, i) => ({
+      geometry: b.wireGeo,
+      count: b.count,
+      delay: (i / n) * REVEAL_WINDOW,
+    }));
 
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
     return { centered: cloned, scale: TARGET_SIZE / maxDim };
@@ -77,12 +90,36 @@ export const MonolithModel: React.FC = () => {
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
-    groupRef.current.rotation.y = t * 0.12;
-    groupRef.current.position.y = 0.2 + Math.sin(t * 0.5) * 0.08;
+    const g = groupRef.current;
+
+    // ── Powering-up reveal ── trace each mesh's edges on, base first.
+    if (powerStart.current === null) powerStart.current = t;
+    const pt = t - powerStart.current;
+    const totalReveal = REVEAL_WINDOW + DRAW_DURATION;
+
+    for (const part of wirePartsRef.current) {
+      const local = THREE.MathUtils.clamp((pt - part.delay) / DRAW_DURATION, 0, 1);
+      if (local >= 1) {
+        part.geometry.setDrawRange(0, Infinity); // fully lit
+      } else {
+        const drawn = Math.floor((part.count * easeOutCubic(local)) / 2) * 2;
+        part.geometry.setDrawRange(0, drawn);
+      }
+    }
+
+    // Brighten the edges as the structure powers up, then hold steady.
+    if (wireMatRef.current) {
+      const lit = THREE.MathUtils.clamp(pt / totalReveal, 0, 1);
+      wireMatRef.current.opacity = THREE.MathUtils.lerp(0.4, 0.85, lit);
+    }
+
+    // ── Idle ── slow, stately spin with a barely-there float. No sway/breathing.
+    g.rotation.y = t * SPIN_SPEED;
+    g.position.y = 0.35 + Math.sin(t * 0.3) * 0.04;
   });
 
   return (
-    <group ref={groupRef} position={[0, 0.2, 0]} scale={scale}>
+    <group ref={groupRef} position={[0, 0.35, 0]} scale={scale}>
       <primitive object={centered} />
     </group>
   );

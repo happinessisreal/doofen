@@ -138,6 +138,51 @@ html, body {
   background: radial-gradient(circle, rgba(125, 83, 178, 0.20), rgba(125, 83, 178, 0.05) 45%, transparent 70%);
 }
 
+/* ─── Kinetic marquee ticker ─── */
+.marquee {
+  position: relative;
+  z-index: 3;
+  overflow: hidden;
+  border-top: 1px solid rgba(125, 83, 178, 0.15);
+  border-bottom: 1px solid rgba(125, 83, 178, 0.15);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 1.1rem 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-scroll 38s linear infinite;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-item {
+  font-size: 0.95rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(183, 148, 214, 0.55);
+  padding: 0 1.5rem;
+}
+.marquee-sep {
+  color: var(--color-violet);
+  opacity: 0.7;
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .marquee-item { font-size: 0.8rem; letter-spacing: 2px; }
+}
+
 /* ─── Hero CTAs ─── */
 .hero-cta-row {
   display: flex;
@@ -257,7 +302,7 @@ html, body {
 .nav-link {
   color: rgba(183, 148, 214, 0.6);
   text-decoration: none;
-  font-size: 0.75rem;
+  font-size: 1.125rem;
   text-transform: uppercase;
   letter-spacing: 3px;
   transition: color 0.3s ease;
@@ -319,6 +364,43 @@ html, body {
   color: rgba(183, 148, 214, 0.5);
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+/* ─── Flagship vault list (work teaser) ─── */
+.vault-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+.vault-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(125, 83, 178, 0.15);
+}
+.vault-item:first-child { border-top: none; }
+.vault-index {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  color: rgba(125, 83, 178, 0.55);
+  padding-top: 0.2rem;
+  min-width: 1.6rem;
+}
+.vault-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.vault-name {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+}
+.vault-desc {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: rgba(183, 148, 214, 0.5);
 }
 
 /* ─── About section ─── */
@@ -691,7 +773,7 @@ a.header-left { text-decoration: none; }
     -webkit-overflow-scrolling: touch;
   }
   .nav-link {
-    font-size: 0.65rem;
+    font-size: 0.98rem;
     letter-spacing: 2px;
     white-space: nowrap;
   }

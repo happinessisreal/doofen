@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MonolithModel } from './MonolithModel';
+import { OrbitalSystem } from './OrbitalSystem';
 import { FloatingServices } from './FloatingServices';
 import { ArtifactVault } from './ArtifactVault';
 import { type ActiveItem } from './ServiceDrawer';
@@ -10,6 +11,11 @@ interface MonolithCanvasProps {
   onSelectItem: (item: ActiveItem) => void;
 }
 
+// Fraction of total scroll spent revealing the building before free orbiting.
+const REVEAL_END = 0.28;
+const smoothstep = (t: number) => t * t * (3 - 2 * t);
+const lerp = THREE.MathUtils.lerp;
+
 const CameraController: React.FC = () => {
   const { camera, size } = useThree();
 
@@ -17,25 +23,44 @@ const CameraController: React.FC = () => {
     const progress = (window as any).scrollProgress || 0;
     const isMobile = size.width < 768;
 
-    // On mobile: pull camera back further so the tower + labels fit
-    const startY = 3.5;
+    // Three keyframe poses the camera moves through with scroll:
+    //   START — close and below the base, so on landing you only glimpse part of it.
+    //   WIDE  — pulled back and raised: the whole monolith finally in frame.
+    //   END   — orbited round and descended for the lower content sections.
+    const startR = isMobile ? 3.0 : 2.4;
+    const startY = -2.2;
+    const startAngle = -0.4;
+
+    const wideR = isMobile ? 9.0 : 7.0;
+    const wideY = 3.5;
+
+    const endR = isMobile ? 7.0 : 5.0;
     const endY = -1.0;
-    const currentY = startY - progress * (startY - endY);
 
-    const startRadius = isMobile ? 9.0 : 7.0;
-    const endRadius = isMobile ? 7.0 : 5.0;
-    const radius = startRadius - progress * (startRadius - endRadius);
+    let radius: number, camY: number, angle: number, lookAtY: number;
 
-    const angle = progress * Math.PI * 2.5;
+    if (progress < REVEAL_END) {
+      // ── Reveal phase ── pull back + rise from the base to the full framed shot.
+      const e = smoothstep(progress / REVEAL_END);
+      radius = lerp(startR, wideR, e);
+      camY = lerp(startY, wideY, e);
+      angle = lerp(startAngle, 0, e);
+      lookAtY = lerp(-1.4, wideY * 0.4, e);
+    } else {
+      // ── Orbit phase ── circle the revealed monolith while descending.
+      const k = (progress - REVEAL_END) / (1 - REVEAL_END);
+      radius = lerp(wideR, endR, k);
+      camY = lerp(wideY, endY, k);
+      angle = k * Math.PI * 2.5;
+      lookAtY = camY * 0.4;
+    }
 
     const targetX = radius * Math.cos(angle);
     const targetZ = radius * Math.sin(angle);
 
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, 0.08);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, currentY, 0.08);
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.08);
-
-    const lookAtY = currentY * 0.4;
+    camera.position.x = lerp(camera.position.x, targetX, 0.08);
+    camera.position.y = lerp(camera.position.y, camY, 0.08);
+    camera.position.z = lerp(camera.position.z, targetZ, 0.08);
     camera.lookAt(new THREE.Vector3(0, lookAtY, 0));
   });
 
@@ -55,7 +80,9 @@ export const MonolithCanvas: React.FC<MonolithCanvasProps> = ({ onSelectItem }) 
   return (
     <Canvas
       camera={{
-        position: [isMobile ? 9.0 : 7.0, 3.5, 0],
+        // Match the scroll-reveal START pose so the first painted frame is already
+        // the close, partial view at the base — the full building appears on scroll.
+        position: [isMobile ? 3.0 : 2.4, -2.2, 0],
         fov: isMobile ? 55 : 45,
       }}
       style={{ background: 'transparent' }}
@@ -71,6 +98,7 @@ export const MonolithCanvas: React.FC<MonolithCanvasProps> = ({ onSelectItem }) 
       <directionalLight position={[2, 5, 5]} intensity={0.5} color="#ffffff" />
 
       <CameraController />
+      <OrbitalSystem />
       <Suspense fallback={null}>
         <MonolithModel />
       </Suspense>

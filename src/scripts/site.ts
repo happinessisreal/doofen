@@ -38,7 +38,7 @@ function initScrollReveal() {
       if (!entry.isIntersecting) return;
       const el = entry.target as HTMLElement;
       io.unobserve(el);
-      animate(el, { opacity: [0, 1], translateY: [60, 0], duration: 900, ease: 'outExpo' });
+      animate(el, { opacity: [0, 1], translateY: [60, 0], duration: 450, ease: 'outExpo' });
     });
   }, { threshold: 0.15 });
   document.querySelectorAll<HTMLElement>('[data-reveal-scroll]').forEach((el) => io.observe(el));
@@ -99,20 +99,20 @@ export function initSite() {
     return;
   }
 
-  const tl = createTimeline({ defaults: { ease: 'outExpo', duration: 800 } });
+  const tl = createTimeline({ defaults: { ease: 'outExpo', duration: 400 } });
   tl.add('.header-logo', { opacity: [0, 1], scale: [0.5, 1], ease: 'outBack(1.7)' }, 0)
-    .add('.header-brand', { opacity: [0, 1], translateX: [-12, 0] }, 120)
-    .add('.nav-link', { opacity: [0, 1], translateY: [-14, 0], delay: stagger(70) }, 200);
+    .add('.header-brand', { opacity: [0, 1], translateX: [-12, 0] }, 60)
+    .add('.nav-link', { opacity: [0, 1], translateY: [-14, 0], delay: stagger(35) }, 100);
 
   if (chars.length) {
-    tl.add(chars, { opacity: [0, 1], translateY: [46, 0], delay: stagger(26) }, 420);
+    tl.add(chars, { opacity: [0, 1], translateY: [46, 0], delay: stagger(13) }, 210);
   }
 
   // All remaining above-the-fold reveal targets (page label, body, CTAs, cue, etc.).
   const others = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'))
     .filter((el) => !el.closest('.site-header') && !el.classList.contains('char'));
   if (others.length) {
-    tl.add(others, { opacity: [0, 1], translateY: [24, 0], delay: stagger(80) }, chars.length ? '-=240' : 360);
+    tl.add(others, { opacity: [0, 1], translateY: [24, 0], delay: stagger(40) }, chars.length ? '-=120' : 180);
   }
 
   initScrollReveal();

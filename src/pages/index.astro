@@ -5,15 +5,22 @@ import { SERVICES } from '../data/services';
 import { PRODUCTS } from '../data/products';
 
 const featuredServices = SERVICES.slice(0, 6);
+
+// Kinetic ticker keywords — duplicated in the track for a seamless loop.
+const tickerWords = [
+  'Websites', 'Machine Learning', 'Films', 'Campaigns', 'Apps',
+  'Research', 'Animation', 'Niche Tech', 'Games', 'SEO', 'Strategy',
+];
+
+// Card list for the work teaser — the 3D artifacts plus Digital Marketing.
+const flagship = [
+  ...PRODUCTS.map(({ name, desc }) => ({ name, desc })),
+  { name: 'Digital Marketing', desc: 'Full-funnel marketing campaigns across digital channels.' },
+];
 ---
 
 <Layout title="Doofenshmirtz Evil Inc. — The Digital Monolith">
   <MonolithExperience client:only="react" />
-
-  <!-- Fixed background kinetic wordmark -->
-  <div class="fixed-tagline">
-    <h1 id="kinetic-tagline">Doofenshmirtz</h1>
-  </div>
 
   <!-- Scroll Container -->
   <div class="scroll-container">
@@ -37,6 +44,15 @@ const featuredServices = SERVICES.slice(0, 6);
       </div>
     </section>
 
+    <!-- Kinetic capabilities ticker -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        {[...tickerWords, ...tickerWords].map((w) => (
+          <span class="marquee-item">{w}<span class="marquee-sep"> // </span></span>
+        ))}
+      </div>
+    </div>
+
     <!-- Services teaser -->
     <section class="section-panel" id="services-teaser" style="height: 110vh; display: flex; align-items: center;">
       <div class="section-content right" data-reveal-scroll>
@@ -55,14 +71,17 @@ const featuredServices = SERVICES.slice(0, 6);
     <!-- Work teaser -->
     <section class="section-panel" id="work-teaser" style="height: 110vh; display: flex; align-items: center;">
       <div class="section-content" data-reveal-scroll>
-        <span class="section-label">Artifact Vault</span>
-        <h2 class="section-heading">Flagship Artifacts</h2>
-        <p class="section-body">
-          A few pieces of work we keep behind glass. Click the shapes orbiting the monolith, or pull the full schematics.
-        </p>
-        <div class="services-grid" style="grid-template-columns: 1fr;">
-          {PRODUCTS.map((p) => <span>{p.name} — {p.desc}</span>)}
-        </div>
+        <ul class="vault-list">
+          {flagship.map((p, i) => (
+            <li class="vault-item">
+              <span class="vault-index">{String(i + 1).padStart(2, '0')}</span>
+              <span class="vault-text">
+                <span class="vault-name">{p.name}</span>
+                <span class="vault-desc">{p.desc}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
         <a href="/work" class="cta" data-magnetic style="margin-top: 1.75rem;">View Work</a>
       </div>
     </section>
@@ -91,7 +110,7 @@ const featuredServices = SERVICES.slice(0, 6);
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // GSAP drives the scroll-linked 3D camera + the kinetic wordmark parallax.
+  // GSAP drives the scroll-linked 3D camera.
   ScrollTrigger.create({
     trigger: '.scroll-container',
     start: 'top top',
@@ -100,18 +119,6 @@ const featuredServices = SERVICES.slice(0, 6);
     onUpdate: (self) => {
       (window as any).scrollProgress = self.progress;
     },
-  });
-
-  gsap.to('#kinetic-tagline', {
-    scrollTrigger: {
-      trigger: '.scroll-container',
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 0.5,
-    },
-    xPercent: -12,
-    rotate: -1,
-    opacity: 0.12,
   });
 
   // anime.js entrance + reveals + magnetic + progress bar (shared across pages).

@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// The kinds of operators behind the monolith — part lab, part studio.
+const operators = [
+  {
+    title: 'The Engineers',
+    desc: 'Full-stack builders and ML practitioners who turn schemes into shipping systems — websites, apps, and the strange custom tech in between.',
+  },
+  {
+    title: 'The Storytellers',
+    desc: 'Animators, filmmakers, and content strategists who make complex ideas land — and make establishments impossible to ignore.',
+  },
+  {
+    title: 'The Strategists',
+    desc: 'Marketers, researchers, and campaign architects who plot the route from obscurity to total domination of your corner of the world.',
+  },
+  {
+    title: 'The Schemers',
+    desc: 'The taste department. They obsess over the details nobody asked for, because that unreasonable polish is the whole point.',
+  },
+];
+---
+
+<Layout
+  title="Who We Are — Doofenshmirtz Evil Inc."
+  description="The people behind Doofenshmirtz Evil Inc. — engineers, storytellers, and strategists building the digital machinery establishments run on."
+>
+  <div class="page">
+    <header class="page-hero">
+      <span class="section-label" data-reveal>The People</span>
+      <h1 class="section-heading hero-heading">Who We Are</h1>
+      <p class="section-body" data-reveal style="max-width: 660px;">
+        Doofenshmirtz Evil Inc. is a small, dangerous collective of engineers, designers, and operators. Part laboratory, part design studio — assembled to build the digital machinery establishments use to take over their corner of the world.
+      </p>
+    </header>
+
+    <section class="card-grid" data-reveal-scroll>
+      {operators.map((o, i) => (
+        <div class="card">
+          <span class="card-index">{String(i + 1).padStart(2, '0')}</span>
+          <h2 class="card-title">{o.title}</h2>
+          <p class="card-desc">{o.desc}</p>
+        </div>
+      ))}
+    </section>
+
+    <section class="about-section about-section--page" style="margin-top: 4rem;">
+      <div class="about-col" data-reveal-scroll>
+        <div>
+          <h2 class="about-heading">How We Work</h2>
+          <p class="about-text">
+            One team, one pipeline — concept to deployment under a single roof. No handoffs to agencies you'll never meet, no lost-in-translation briefs. The same people who scheme the strategy are the ones who build, shoot, and ship it.
+          </p>
+        </div>
+        <div class="about-meta-box">
+          Discipline: Techno-Cultural<br />
+          Base: Danville, Tri-State Area<br />
+          Disposition: Precise &amp; Unreasonable
+        </div>
+      </div>
+
+      <div class="about-col" data-reveal-scroll>
+        <div>
+          <h2 class="about-heading">What We Believe</h2>
+          <p class="about-text">
+            That establishments deserve better than templated mediocrity. That engineering rigor and cultural instinct belong in the same room. And that a little theatrical ambition is exactly what most projects are missing.
+          </p>
+        </div>
+        <div class="about-contact-grid">
+          <div>
+            <h3>Read the Blueprint</h3>
+            <p><a href="/about" class="contact-value-link">Our operating mandate →</a></p>
+          </div>
+          <div>
+            <h3>See the Output</h3>
+            <p><a href="/work" class="contact-value-link">Flagship artifacts →</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-cta">
+      <p class="section-body">Like how we think? Let's build something unreasonable together.</p>
+      <a href="/contact" class="cta cta-primary" data-magnetic>Engage Us</a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { initSite } from '../scripts/site';
+  initSite();
+</script>

@@ -1,6 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { PRODUCTS } from '../data/products';
+
+// Flagship artifacts (the orbiting 3D pieces) plus Digital Marketing.
+const works = [
+  ...PRODUCTS.map(({ name, desc }) => ({ name, desc })),
+  {
+    name: 'Digital Marketing',
+    desc: 'Full-funnel marketing campaigns engineered across every digital channel — from search dominance to conversion-tuned social offensives.',
+  },
+];
 ---
 
 <Layout title="Work — Doofenshmirtz Evil Inc." description="Flagship artifacts from Doofenshmirtz Evil Inc. — content pipelines, animation, and explainers.">
@@ -14,9 +23,9 @@ import { PRODUCTS } from '../data/products';
     </header>
 
     <div class="work-grid">
-      {PRODUCTS.map((p, i) => (
+      {works.map((p, i) => (
         <article class="work-card" data-reveal-scroll>
-          <span class="card-index">{String(i + 1).padStart(2, '0')} / {String(PRODUCTS.length).padStart(2, '0')}</span>
+          <span class="card-index">{String(i + 1).padStart(2, '0')} / {String(works.length).padStart(2, '0')}</span>
           <h2 class="work-title">{p.name}</h2>
           <p class="work-desc">{p.desc}</p>
           <a href="/contact" class="work-link" data-magnetic>Commission this →</a>

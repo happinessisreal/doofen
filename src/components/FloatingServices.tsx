@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -24,7 +24,26 @@ const ServiceNode: React.FC<ServiceNodeProps> = ({ service, index, total, onSele
   const baseAngle = (index / total) * Math.PI * 2;
   const radius = 2.8 + (index % 3) * 0.5;
   const baseY = -1.2 + (index / total) * 3.8;
-  const speed = 0.04 + (index % 5) * 0.008;
+  const speed = 0.06 + (index % 5) * 0.01;
+  // Tilt each orbit so the satellites weave above/below their base plane.
+  const incline = ((index % 4) - 1.5) * 0.28;
+
+  // Static line tracing this satellite's exact orbital path.
+  const orbitGeometry = useMemo(() => {
+    const SEG = 96;
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i < SEG; i++) {
+      const a = (i / SEG) * Math.PI * 2;
+      pts.push(
+        new THREE.Vector3(
+          radius * Math.cos(a),
+          baseY + Math.sin(a) * incline,
+          radius * Math.sin(a)
+        )
+      );
+    }
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }, [radius, baseY, incline]);
 
   useFrame((state) => {
     if (!groupRef.current) return;
@@ -33,7 +52,7 @@ const ServiceNode: React.FC<ServiceNodeProps> = ({ service, index, total, onSele
 
     const x = radius * Math.cos(angle);
     const z = radius * Math.sin(angle);
-    const y = baseY + Math.sin(t * 0.6 + index) * 0.06;
+    const y = baseY + Math.sin(angle) * incline + Math.sin(t * 0.6 + index) * 0.06;
 
     groupRef.current.position.set(x, y, z);
 
@@ -46,7 +65,17 @@ const ServiceNode: React.FC<ServiceNodeProps> = ({ service, index, total, onSele
   });
 
   return (
-    <group ref={groupRef}>
+    <>
+      {/* This satellite's orbit path */}
+      <lineLoop geometry={orbitGeometry}>
+        <lineBasicMaterial
+          color={hovered ? 0xb794d6 : 0x7d53b2}
+          transparent
+          opacity={hovered ? 0.45 : 0.14}
+        />
+      </lineLoop>
+
+      <group ref={groupRef}>
       {/* Node sphere */}
       <mesh
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
@@ -66,6 +95,18 @@ const ServiceNode: React.FC<ServiceNodeProps> = ({ service, index, total, onSele
           color={hovered ? 0xc9aef0 : 0x9d77d1}
           transparent
           opacity={hovered ? 1 : 0.8}
+        />
+      </mesh>
+
+      {/* Faint additive glow so each satellite reads as a point of light */}
+      <mesh>
+        <sphereGeometry args={[hovered ? 0.22 : 0.14, 12, 12]} />
+        <meshBasicMaterial
+          color={0xb794d6}
+          transparent
+          opacity={hovered ? 0.35 : 0.15}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
         />
       </mesh>
 
@@ -102,7 +143,8 @@ const ServiceNode: React.FC<ServiceNodeProps> = ({ service, index, total, onSele
           {service.name}
         </div>
       </Html>
-    </group>
+      </group>
+    </>
   );
 };
 
