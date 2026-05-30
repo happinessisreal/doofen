@@ -47,11 +47,12 @@ const CameraController: React.FC = () => {
       angle = lerp(startAngle, 0, e);
       lookAtY = lerp(-1.4, wideY * 0.4, e);
     } else {
-      // ── Orbit phase ── circle the revealed monolith while descending.
+      // ── Orbit phase ── drift a quarter-turn around the monolith while descending,
+      // so most of the perceived rotation comes from the building's own slow spin.
       const k = (progress - REVEAL_END) / (1 - REVEAL_END);
       radius = lerp(wideR, endR, k);
       camY = lerp(wideY, endY, k);
-      angle = k * Math.PI * 2.5;
+      angle = k * (Math.PI / 2);
       lookAtY = camY * 0.4;
     }
 

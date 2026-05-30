@@ -10,7 +10,7 @@ const TARGET_SIZE = 3.6; // largest dimension in world units (fits inside the se
 // ── Powering-up reveal tuning ──
 const REVEAL_WINDOW = 1.6; // span over which meshes begin lighting up (base → top)
 const DRAW_DURATION = 0.95; // time each mesh takes to finish tracing its edges
-const SPIN_SPEED = 0.05; // slow, stately idle rotation (rad/s)
+const SPIN_SPEED = 0.1; // slow, stately idle rotation (rad/s)
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
