@@ -6,12 +6,6 @@ import { PRODUCTS } from '../data/products';
 
 const featuredServices = SERVICES.slice(0, 6);
 
-// Kinetic ticker keywords — duplicated in the track for a seamless loop.
-const tickerWords = [
-  'Websites', 'Machine Learning', 'Films', 'Campaigns', 'Apps',
-  'Research', 'Animation', 'Niche Tech', 'Games', 'SEO', 'Strategy',
-];
-
 // Card list for the work teaser — the 3D artifacts plus Digital Marketing.
 const flagship = [
   ...PRODUCTS.map(({ name, desc }) => ({ name, desc })),
@@ -43,15 +37,6 @@ const flagship = [
         </div>
       </div>
     </section>
-
-    <!-- Kinetic capabilities ticker -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        {[...tickerWords, ...tickerWords].map((w) => (
-          <span class="marquee-item">{w}<span class="marquee-sep"> // </span></span>
-        ))}
-      </div>
-    </div>
 
     <!-- Services teaser -->
     <section class="section-panel" id="services-teaser" style="height: 110vh; display: flex; align-items: center;">
