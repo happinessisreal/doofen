@@ -52,7 +52,7 @@ const CameraController: React.FC = () => {
       const k = (progress - REVEAL_END) / (1 - REVEAL_END);
       radius = lerp(wideR, endR, k);
       camY = lerp(wideY, endY, k);
-      angle = k * (Math.PI / 2);
+      angle = -k * (Math.PI / 2); // clockwise (viewed from above)
       lookAtY = camY * 0.4;
     }
 

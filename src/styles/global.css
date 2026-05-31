@@ -244,7 +244,7 @@ html, body {
   color: var(--color-violet-bright);
 }
 .header-brand {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: bold;
   letter-spacing: 3px;
   text-transform: uppercase;
