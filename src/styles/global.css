@@ -314,9 +314,9 @@ html, body {
 .services-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem 1.5rem;
-  font-size: 0.75rem;
-  color: rgba(183, 148, 214, 0.5);
+  gap: 0.7rem 1.5rem;
+  font-size: 0.95rem;
+  color: var(--color-violet-bright);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
