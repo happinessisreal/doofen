@@ -1,0 +1,217 @@
+---
+export const prerender = false;
+
+import { verifySessionToken, SESSION_COOKIE } from '../../lib/auth';
+import { getCategoriesWithWorks, type CategoryWithWorks } from '../../lib/db';
+import { parseYouTubeId, thumbnailUrl } from '../../lib/youtube';
+
+const authed = await verifySessionToken(Astro.cookies.get(SESSION_COOKIE)?.value);
+
+let categories: CategoryWithWorks[] = [];
+let dbError: string | null = null;
+if (authed) {
+  try {
+    categories = await getCategoriesWithWorks();
+  } catch (err) {
+    dbError = err instanceof Error ? err.message : String(err);
+  }
+}
+
+const error = Astro.url.searchParams.get('error');
+
+const thumbFor = (w: { image_url: string | null; video_url: string | null }) => {
+  if (w.image_url) return w.image_url;
+  const id = parseYouTubeId(w.video_url);
+  return id ? thumbnailUrl(id) : null;
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Doofenshmirtz Evil Inc.</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>" />
+  </head>
+  <body>
+    <main class="wrap">
+      {!authed ? (
+        <section class="login">
+          <h1>Admin Access</h1>
+          {error === 'auth' && <p class="err">Incorrect password.</p>}
+          <form method="POST" action="/api/admin/login">
+            <input type="password" name="password" placeholder="Password" autocomplete="current-password" required autofocus />
+            <button type="submit">Enter</button>
+          </form>
+          <a class="back" href="/">← Back to site</a>
+        </section>
+      ) : (
+        <section class="dash">
+          <header class="topbar">
+            <h1>Works Admin</h1>
+            <div class="topbar-actions">
+              <a class="link" href="/work" target="_blank">View /work ↗</a>
+              <form method="POST" action="/api/admin/logout"><button class="ghost">Log out</button></form>
+            </div>
+          </header>
+
+          {error && error !== 'auth' && <p class="err">Something went wrong with the last action (check the value / image type & size).</p>}
+          {dbError && <p class="err">Database error: {dbError}. Is POSTGRES_URL set and `bun run db:init` run?</p>}
+
+          <div class="panel">
+            <h2>New Category</h2>
+            <form method="POST" action="/api/admin/categories" class="row">
+              <input type="hidden" name="_action" value="create" />
+              <input type="text" name="name" placeholder="Category name" required />
+              <input type="text" name="description" placeholder="Short description (optional)" />
+              <button type="submit">Add Category</button>
+            </form>
+          </div>
+
+          {categories.length === 0 && !dbError && (
+            <p class="empty">No categories yet. Create one above, then add works to it.</p>
+          )}
+
+          {categories.map((cat) => (
+            <div class="panel category">
+              <div class="cat-head">
+                <form method="POST" action="/api/admin/categories" class="row">
+                  <input type="hidden" name="_action" value="update" />
+                  <input type="hidden" name="id" value={cat.id} />
+                  <input type="text" name="name" value={cat.name} required />
+                  <input type="text" name="description" value={cat.description ?? ''} placeholder="Description" />
+                  <button type="submit">Save</button>
+                </form>
+                <form method="POST" action="/api/admin/categories" onsubmit="return confirm('Delete this category and ALL its works?')">
+                  <input type="hidden" name="_action" value="delete" />
+                  <input type="hidden" name="id" value={cat.id} />
+                  <button type="submit" class="danger">Delete category</button>
+                </form>
+              </div>
+
+              <div class="works">
+                {cat.works.map((w) => {
+                  const thumb = thumbFor(w);
+                  return (
+                    <div class="work">
+                      <div class="work-top">
+                        {thumb
+                          ? <img src={thumb} alt="" class="thumb" />
+                          : <div class="thumb thumb--empty">—</div>}
+                        <div class="work-meta">
+                          <strong>{w.title}</strong>
+                          <span class="tag">{w.video_url ? 'video' : w.image_url ? 'image' : 'text'}</span>
+                        </div>
+                        <form method="POST" action="/api/admin/works" onsubmit="return confirm('Delete this work?')">
+                          <input type="hidden" name="_action" value="delete" />
+                          <input type="hidden" name="id" value={w.id} />
+                          <button type="submit" class="danger sm">Delete</button>
+                        </form>
+                      </div>
+                      <details>
+                        <summary>Edit</summary>
+                        <form method="POST" action="/api/admin/works" enctype="multipart/form-data" class="grid">
+                          <input type="hidden" name="_action" value="update" />
+                          <input type="hidden" name="id" value={w.id} />
+                          <input type="hidden" name="category_id" value={cat.id} />
+                          <label>Title<input type="text" name="title" value={w.title} required /></label>
+                          <label>Description<textarea name="description" rows="2">{w.description ?? ''}</textarea></label>
+                          <label>External link (optional)<input type="url" name="link" value={w.link ?? ''} placeholder="https://" /></label>
+                          <label>YouTube URL (optional)<input type="url" name="video_url" value={w.video_url ?? ''} placeholder="https://youtu.be/..." /></label>
+                          <label>Replace image (optional)<input type="file" name="image" accept="image/*" /></label>
+                          <button type="submit">Save work</button>
+                        </form>
+                      </details>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <details class="new-work">
+                <summary>+ Add work to “{cat.name}”</summary>
+                <form method="POST" action="/api/admin/works" enctype="multipart/form-data" class="grid">
+                  <input type="hidden" name="_action" value="create" />
+                  <input type="hidden" name="category_id" value={cat.id} />
+                  <label>Title<input type="text" name="title" required /></label>
+                  <label>Description<textarea name="description" rows="2"></textarea></label>
+                  <label>External link (optional)<input type="url" name="link" placeholder="https://" /></label>
+                  <label>YouTube URL (optional)<input type="url" name="video_url" placeholder="https://youtu.be/..." /></label>
+                  <label>Image upload (optional)<input type="file" name="image" accept="image/*" /></label>
+                  <button type="submit">Add work</button>
+                </form>
+              </details>
+            </div>
+          ))}
+        </section>
+      )}
+    </main>
+
+    <style is:global>
+      :root { --v: #7d53b2; --vb: #b794d6; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #07030d;
+        color: var(--vb);
+        font-family: 'Share Tech Mono', 'Courier New', monospace;
+        line-height: 1.5;
+      }
+      .wrap { max-width: 920px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+      h1 { color: #fff; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
+      h2 { color: #fff; font-weight: 400; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 1rem; }
+      a { color: var(--vb); }
+      .err { background: rgba(220,80,80,0.12); border: 1px solid rgba(220,80,80,0.4); color: #f3b6b6; padding: 0.6rem 0.9rem; }
+      .empty { opacity: 0.6; }
+
+      /* Login */
+      .login { max-width: 360px; margin: 12vh auto 0; text-align: center; }
+      .login form { display: flex; gap: 0.5rem; margin-top: 1.25rem; }
+      .login .back { display: inline-block; margin-top: 1.5rem; font-size: 0.8rem; opacity: 0.7; text-decoration: none; }
+
+      /* Dashboard */
+      .topbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(125,83,178,0.3); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+      .topbar-actions { display: flex; gap: 1rem; align-items: center; }
+      .link { font-size: 0.8rem; text-decoration: none; }
+      .panel { border: 1px solid rgba(125,83,178,0.25); padding: 1.25rem; margin-bottom: 1.25rem; background: rgba(125,83,178,0.04); }
+      .category { background: rgba(0,0,0,0.3); }
+      .cat-head { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid rgba(125,83,178,0.2); padding-bottom: 1rem; margin-bottom: 1rem; }
+
+      input, textarea, button { font-family: inherit; font-size: 0.85rem; }
+      input, textarea {
+        background: #0d0715; border: 1px solid rgba(125,83,178,0.4); color: var(--vb);
+        padding: 0.55rem 0.7rem; width: 100%;
+      }
+      input:focus, textarea:focus { outline: none; border-color: var(--vb); }
+      .row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+      .row input[type=text] { flex: 1; min-width: 160px; }
+      .grid { display: grid; gap: 0.7rem; margin-top: 0.9rem; }
+      .grid label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+
+      button {
+        background: var(--v); border: 1px solid var(--v); color: #fff;
+        padding: 0.55rem 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+        transition: background 0.2s, color 0.2s;
+      }
+      button:hover { background: var(--vb); border-color: var(--vb); }
+      button.ghost { background: transparent; color: var(--vb); }
+      button.ghost:hover { background: var(--v); color: #fff; }
+      button.danger { background: transparent; border-color: rgba(220,80,80,0.5); color: #e08a8a; }
+      button.danger:hover { background: rgba(220,80,80,0.85); color: #fff; border-color: rgba(220,80,80,0.85); }
+      button.sm { padding: 0.35rem 0.7rem; font-size: 0.7rem; }
+
+      .works { display: flex; flex-direction: column; gap: 0.75rem; }
+      .work { border: 1px solid rgba(125,83,178,0.18); padding: 0.75rem; }
+      .work-top { display: flex; align-items: center; gap: 0.85rem; }
+      .work-meta { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; }
+      .work-meta strong { color: #fff; font-weight: 400; }
+      .tag { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.55; }
+      .thumb { width: 64px; height: 48px; object-fit: cover; border: 1px solid rgba(125,83,178,0.3); }
+      .thumb--empty { display: flex; align-items: center; justify-content: center; opacity: 0.4; }
+      details { margin-top: 0.6rem; }
+      summary { cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+      .new-work { margin-top: 1rem; }
+    </style>
+  </body>
+</html>

@@ -2,15 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import { MonolithExperience } from '../components/MonolithExperience';
 import { SERVICES } from '../data/services';
-import { PRODUCTS } from '../data/products';
 
 const featuredServices = SERVICES.slice(0, 6);
-
-// Card list for the work teaser — the 3D artifacts plus Digital Marketing.
-const flagship = [
-  ...PRODUCTS.map(({ name, desc }) => ({ name, desc })),
-  { name: 'Digital Marketing', desc: 'Full-funnel marketing campaigns across digital channels.' },
-];
 ---
 
 <Layout title="Doofenshmirtz Evil Inc. — The Digital Monolith">
@@ -53,16 +46,10 @@ const flagship = [
     <!-- Work teaser -->
     <section class="section-panel" id="work-teaser" style="height: 110vh; display: flex; align-items: center;">
       <div class="section-content" data-reveal-scroll>
-        <ul class="vault-list">
-          {flagship.map((p, i) => (
-            <li class="vault-item">
-              <span class="vault-index">{String(i + 1).padStart(2, '0')}</span>
-              <span class="vault-text">
-                <span class="vault-name">{p.name}</span>
-                <span class="vault-desc">{p.desc}</span>
-              </span>
-            </li>
-          ))}
+        <span class="section-label">Selected Work</span>
+        <h2 class="section-heading">From the Vault</h2>
+        <ul class="vault-list" id="teaser-list">
+          <li class="vault-empty">Loading…</li>
         </ul>
         <a href="/work" class="cta" data-magnetic style="margin-top: 1.75rem;">View Work</a>
       </div>
@@ -106,4 +93,33 @@ const flagship = [
   // anime.js entrance + reveals + magnetic + progress bar (shared across pages).
   initSite();
   initScrollCue();
+
+  // Populate the work teaser with live categories from the admin-managed data.
+  (async () => {
+    const list = document.getElementById('teaser-list');
+    if (!list) return;
+    try {
+      const res = await fetch('/api/categories');
+      const { categories } = await res.json() as {
+        categories: { name: string; slug: string; description: string | null; works: unknown[] }[];
+      };
+      const withWorks = categories.filter((c) => c.works.length > 0);
+      if (withWorks.length === 0) {
+        list.innerHTML = '<li class="vault-empty">Work is being catalogued — view the vault soon.</li>';
+        return;
+      }
+      list.innerHTML = withWorks.slice(0, 5).map((c, i) => `
+        <li class="vault-item">
+          <a class="vault-link" href="/work/${c.slug}">
+            <span class="vault-index">${String(i + 1).padStart(2, '0')}</span>
+            <span class="vault-text">
+              <span class="vault-name">${c.name}</span>
+              <span class="vault-desc">${c.description ?? `${c.works.length} piece${c.works.length === 1 ? '' : 's'}`}</span>
+            </span>
+          </a>
+        </li>`).join('');
+    } catch {
+      list.innerHTML = '<li class="vault-empty">Work is being catalogued — view the vault soon.</li>';
+    }
+  })();
 </script>

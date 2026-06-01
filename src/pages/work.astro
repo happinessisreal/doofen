@@ -1,37 +1,40 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { PRODUCTS } from '../data/products';
+export const prerender = false;
 
-// Flagship artifacts (the orbiting 3D pieces) plus Digital Marketing.
-const works = [
-  ...PRODUCTS.map(({ name, desc }) => ({ name, desc })),
-  {
-    name: 'Digital Marketing',
-    desc: 'Full-funnel marketing campaigns engineered across every digital channel — from search dominance to conversion-tuned social offensives.',
-  },
-];
+import Layout from '../layouts/Layout.astro';
+import { getCategoriesWithWorks } from '../lib/db';
+
+let categories: Awaited<ReturnType<typeof getCategoriesWithWorks>> = [];
+try {
+  categories = (await getCategoriesWithWorks()).filter((c) => c.works.length > 0);
+} catch (err) {
+  console.error('[work] failed to load categories:', err);
+}
 ---
 
-<Layout title="Work — Doofenshmirtz Evil Inc." description="Flagship artifacts from Doofenshmirtz Evil Inc. — content pipelines, animation, and explainers.">
+<Layout title="Work — Doofenshmirtz Evil Inc." description="Previous works from Doofenshmirtz Evil Inc., organized by category — builds, films, campaigns, and more.">
   <div class="page">
     <header class="page-hero">
       <span class="section-label" data-reveal>Artifact Vault</span>
-      <h1 class="section-heading hero-heading">Flagship Artifacts</h1>
+      <h1 class="section-heading hero-heading">Our Work</h1>
       <p class="section-body" data-reveal style="max-width: 640px;">
-        The pieces we keep behind glass — the work that defines how we build, shoot, and explain. Each one is a repeatable system, not a one-off.
+        Browse what we've built, shot, and shipped — by craft. Pick a category to see everything inside it.
       </p>
     </header>
 
-    <div class="work-grid">
-      {works.map((p, i) => (
-        <article class="work-card" data-reveal-scroll>
-          <span class="card-index">{String(i + 1).padStart(2, '0')} / {String(works.length).padStart(2, '0')}</span>
-          <h2 class="work-title">{p.name}</h2>
-          <p class="work-desc">{p.desc}</p>
-          <a href="/contact" class="work-link" data-magnetic>Commission this →</a>
-        </article>
-      ))}
-    </div>
+    {categories.length === 0 ? (
+      <p class="works-status">No works published yet — check back soon.</p>
+    ) : (
+      <div class="work-grid">
+        {categories.map((c) => (
+          <a href={`/work/${c.slug}`} class="work-card category-card" data-reveal-scroll>
+            <h2 class="work-title">{c.name}</h2>
+            {c.description && <p class="work-desc">{c.description}</p>}
+            <span class="work-link">View →</span>
+          </a>
+        ))}
+      </div>
+    )}
 
     <div class="page-cta">
       <p class="section-body">Want the full monolith in motion? It lives on the home page.</p>

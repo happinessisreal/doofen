@@ -3,6 +3,10 @@ node_modules/
 
 # Build output
 dist/
+.vercel/
+
+# Uploaded work images (local dev storage)
+public/uploads/
 
 # Astro generated
 .astro/

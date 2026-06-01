@@ -4,19 +4,21 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "start": "bun run src/server.ts",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "db:init": "bun run src/scripts/init-db.ts"
   },
   "dependencies": {
     "@astrojs/react": "^4.0.0",
+    "@astrojs/vercel": "^7",
     "@react-three/drei": "^9.100.0",
     "@react-three/fiber": "^8.15.11",
+    "@vercel/blob": "^2.4.0",
+    "@vercel/postgres": "^0.10.0",
     "animejs": "^4.0.0",
     "astro": "^4.5.0",
     "gsap": "^3.12.5",
-    "hono": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.162.0"

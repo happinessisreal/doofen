@@ -1,0 +1,77 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { getCategoryBySlug } from '../../lib/db';
+import { parseYouTubeId, thumbnailUrl, embedUrl } from '../../lib/youtube';
+
+const { slug } = Astro.params;
+const category = slug ? await getCategoryBySlug(slug) : null;
+
+if (!category) {
+  return Astro.redirect('/work');
+}
+
+const works = category.works.map((w) => {
+  const ytId = parseYouTubeId(w.video_url);
+  const mediaType = ytId ? 'video' : w.image_url ? 'image' : 'none';
+  return {
+    ...w,
+    mediaType,
+    embed: ytId ? embedUrl(ytId) : null,
+    thumbnail: w.image_url ?? (ytId ? thumbnailUrl(ytId) : null),
+  };
+});
+---
+
+<Layout title={`${category.name} — Work — Doofenshmirtz Evil Inc.`} description={category.description ?? `${category.name} works by Doofenshmirtz Evil Inc.`}>
+  <div class="page">
+    <header class="page-hero">
+      <a href="/work" class="back-link" data-reveal>← All Work</a>
+      <h1 class="section-heading hero-heading">{category.name}</h1>
+      {category.description && (
+        <p class="section-body" data-reveal style="max-width: 640px;">{category.description}</p>
+      )}
+    </header>
+
+    {works.length === 0 ? (
+      <p class="works-status">Nothing in this category yet.</p>
+    ) : (
+      <div class="work-grid">
+        {works.map((w) => (
+          <article
+            class:list={['work-card', 'work-card--media', { 'is-clickable': w.mediaType !== 'none' }]}
+            data-lightbox={w.mediaType !== 'none' ? '' : undefined}
+            data-media-type={w.mediaType}
+            data-embed={w.embed ?? undefined}
+            data-image={w.image_url ?? undefined}
+            data-title={w.title}
+            data-reveal-scroll
+          >
+            <div class:list={['work-thumb', { 'work-thumb--empty': !w.thumbnail }]}>
+              {w.thumbnail && <img src={w.thumbnail} alt={w.title} loading="lazy" />}
+              {w.mediaType === 'video' && <span class="play-badge">▶</span>}
+            </div>
+            <h3 class="work-title">{w.title}</h3>
+            {w.description && <p class="work-desc">{w.description}</p>}
+            {w.link && (
+              <a href={w.link} target="_blank" rel="noopener" class="work-link">Visit ↗</a>
+            )}
+          </article>
+        ))}
+      </div>
+    )}
+
+    <div class="page-cta">
+      <p class="section-body">Want something like this for your establishment?</p>
+      <a href="/contact" class="cta cta-primary" data-magnetic>Engage Us</a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { initSite } from '../../scripts/site';
+  import { initLightbox } from '../../scripts/lightbox';
+  initSite();
+  initLightbox();
+</script>

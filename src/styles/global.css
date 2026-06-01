@@ -641,6 +641,159 @@ a.header-left { text-decoration: none; }
 }
 .work-link:hover { color: #fff; }
 
+/* ─── Dynamic works (category sections + media cards) ─── */
+.works-root { display: flex; flex-direction: column; gap: 4rem; }
+.works-status { color: rgba(183, 148, 214, 0.5); font-size: 0.9rem; }
+.work-category-head {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(125, 83, 178, 0.2);
+  padding-bottom: 1rem;
+}
+.work-category-title {
+  font-size: clamp(1.4rem, 2.5vw, 2.1rem);
+  text-transform: uppercase;
+  color: #fff;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+.work-category-desc {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(183, 148, 214, 0.6);
+  max-width: 640px;
+}
+/* Media cards override the padded text card with an image-led layout */
+.work-card--media { padding: 0; overflow: hidden; }
+.work-card--media.is-clickable { cursor: pointer; }
+.work-card--media .work-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #0d0715;
+  overflow: hidden;
+}
+.work-card--media .work-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.work-card--media:hover .work-thumb img { transform: scale(1.05); }
+.work-thumb--empty::after {
+  content: 'NO PREVIEW';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; letter-spacing: 2px;
+  color: rgba(183, 148, 214, 0.3);
+}
+.play-badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(125, 83, 178, 0.85);
+  color: #fff;
+  font-size: 1.1rem;
+  padding-left: 4px;
+  box-shadow: 0 0 24px var(--color-violet-glow);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.work-card--media:hover .play-badge { transform: translate(-50%, -50%) scale(1.1); }
+.work-card--media .work-title { font-size: 1.15rem; padding: 1.25rem 1.5rem 0; }
+.work-card--media .work-desc { padding: 0 1.5rem; font-size: 0.85rem; }
+.work-card--media .work-link { padding: 0 1.5rem 1.5rem; }
+.work-card--media .work-title:last-child { padding-bottom: 1.5rem; }
+
+/* ─── Category cards (work index) ─── */
+.category-card { text-decoration: none; cursor: pointer; }
+.category-card .work-link { color: var(--color-violet-bright); }
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  color: rgba(183, 148, 214, 0.7);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+.back-link:hover { color: #fff; }
+
+/* Make teaser vault items clickable links */
+.vault-link {
+  display: flex;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+.vault-link:hover .vault-name { color: #fff; }
+
+/* ─── Lightbox / shadowbox ─── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 4vw;
+  background: rgba(3, 1, 7, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.lightbox[hidden] { display: none; }
+.lightbox-close {
+  position: absolute;
+  top: 1.25rem; right: 1.5rem;
+  width: 44px; height: 44px;
+  background: transparent;
+  border: 1px solid rgba(125, 83, 178, 0.5);
+  color: var(--color-violet-bright);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.lightbox-close:hover { background: var(--color-violet); color: #fff; }
+.lightbox-stage {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.lightbox-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(125, 83, 178, 0.4);
+}
+.lightbox-frame iframe {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+.lightbox-img {
+  max-width: 100%;
+  max-height: 82vh;
+  object-fit: contain;
+  border: 1px solid rgba(125, 83, 178, 0.4);
+}
+.lightbox-cap {
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-violet-bright);
+}
+.vault-empty {
+  list-style: none;
+  color: rgba(183, 148, 214, 0.5);
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+}
+
 /* ─── About page section ─── */
 .about-section--page {
   min-height: auto;
