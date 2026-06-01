@@ -2,6 +2,9 @@
   "name": "de-inc-digital-monolith",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
