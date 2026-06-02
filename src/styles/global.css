@@ -112,6 +112,74 @@ html, body {
 /* ─── Utilities ─── */
 .glow-text { text-shadow: 0 0 20px var(--color-violet-glow); }
 
+/* ─── Branded preloader (boot sequence) ─── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-black);
+  transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+.preloader--done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.preloader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  width: min(78vw, 380px);
+  text-align: center;
+}
+.preloader-brand {
+  font-size: 0.82rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--color-violet-bright);
+  text-shadow: 0 0 16px var(--color-violet-glow);
+}
+.preloader-status {
+  font-size: 0.62rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(183, 148, 214, 0.55);
+}
+.preloader-caret {
+  display: inline-block;
+  margin-left: 2px;
+  animation: preloader-blink 1s steps(1) infinite;
+}
+@keyframes preloader-blink { 50% { opacity: 0; } }
+.preloader-bar {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: rgba(125, 83, 178, 0.18);
+  overflow: hidden;
+}
+.preloader-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--color-violet-bright);
+  box-shadow: 0 0 12px var(--color-violet-glow);
+  transition: width 0.3s ease;
+}
+.preloader-pct {
+  font-size: 1.6rem;
+  letter-spacing: 4px;
+  color: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader-caret { animation: none; }
+}
+
 /* ─── Scroll progress bar ─── */
 .scroll-progress {
   position: fixed;
@@ -265,6 +333,35 @@ html, body {
 .nav-link:hover {
   color: #ffffff;
 }
+
+/* ─── Mobile nav toggle (hamburger) — hidden on desktop ─── */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 12;
+}
+.nav-toggle-bar {
+  display: block;
+  width: 26px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-violet-bright);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, background-color 0.2s ease;
+}
+.nav-toggle:hover .nav-toggle-bar { background: #fff; }
+/* Morph the three bars into a clean, centred X (gap 6 + height 2 → 8px to centre) */
+.site-header.nav-open .nav-toggle-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.site-header.nav-open .nav-toggle-bar:nth-child(2) { opacity: 0; transform: scaleX(0.3); }
+.site-header.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
 /* ─── Content sections ─── */
 .section-panel {
@@ -865,26 +962,58 @@ a.header-left { text-decoration: none; }
 /* Mobile (≤ 768px) */
 @media (max-width: 768px) {
   .site-header {
-    padding: 1rem 1.25rem;
-    flex-wrap: wrap;
+    padding: 0.9rem 1.25rem;
+    flex-wrap: nowrap;
     gap: 0.75rem;
+    /* Drop the blur here: backdrop-filter would make the header the containing
+       block for the fixed nav overlay, clipping it to the header's height. */
+    background: rgba(3, 1, 7, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
   .header-brand {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     letter-spacing: 2px;
   }
+
+  /* Keep the logo/brand above the slide-in overlay (same stacking context) */
+  .header-left { position: relative; z-index: 11; }
+
+  /* Reveal the hamburger; turn the link list into a slide-in overlay */
+  .nav-toggle { display: flex; }
   .header-nav-links {
-    gap: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;            /* content height → drops down from the top */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
     width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    padding: 4.8rem 1.5rem 1.6rem; /* clear the header bar, then list the links */
+    background: rgba(3, 1, 7, 0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(125, 83, 178, 0.3);
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55), 0 1px 0 var(--color-violet-glow);
+    transform: translateY(-110%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9; /* under the header bar (10) so the close button stays tappable */
   }
+  .site-header.nav-open .header-nav-links { transform: translateY(0); }
   .nav-link {
-    font-size: 0.98rem;
-    letter-spacing: 2px;
+    font-size: 1.35rem;
+    letter-spacing: 3px;
     white-space: nowrap;
+    width: 100%;
+    padding: 0.9rem 0.2rem;
+    border-bottom: 1px solid rgba(125, 83, 178, 0.12);
+    color: rgba(183, 148, 214, 0.85);
   }
+  .nav-link:last-child { border-bottom: none; }
+  .nav-link.active { color: #fff; }
+  .nav-link.active::after { display: none; }
 
   .fixed-tagline h1 {
     font-size: 10vw;
@@ -972,9 +1101,37 @@ a.header-left { text-decoration: none; }
   .contact-channel {
     padding: 2rem 1.5rem;
   }
-  .work-card {
-    padding: 2rem 1.5rem;
+
+  /* Cards: compact two-up grid on phones */
+  .card-grid {
+    grid-template-columns: 1fr 1fr;
   }
+  .card {
+    padding: 1.25rem 1rem;
+    gap: 0.45rem;
+  }
+  .card-index { font-size: 0.62rem; letter-spacing: 1.5px; }
+  .card-title { font-size: 0.88rem; letter-spacing: 0.5px; }
+  .card-desc { font-size: 0.72rem; line-height: 1.5; }
+
+  .work-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .work-card {
+    padding: 1.4rem 1.1rem;
+    gap: 0.6rem;
+  }
+  .work-title { font-size: 1.05rem; }
+  .work-desc { font-size: 0.78rem; line-height: 1.55; }
+
+  /* Image-led work cards need full width to stay legible */
+  .work-card--media {
+    grid-column: 1 / -1;
+    padding: 0;
+  }
+  .work-card--media .work-title { font-size: 1.1rem; }
+  .work-card--media .work-desc { font-size: 0.82rem; }
 
   .grid-bg {
     background-size: 40px 40px;
@@ -991,7 +1148,8 @@ a.header-left { text-decoration: none; }
     font-size: 0.55rem;
   }
   .header-brand {
-    font-size: 0.6rem;
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
   }
 
   .section-content {
@@ -1010,4 +1168,14 @@ a.header-left { text-decoration: none; }
   .about-col {
     padding: 1.5rem 1rem;
   }
+
+  /* Keep two-up cards breathing on the smallest screens */
+  .card { padding: 1rem 0.85rem; }
+  .card-title { font-size: 0.82rem; }
+  .card-desc { font-size: 0.7rem; }
+  .work-card { padding: 1.2rem 0.95rem; }
+  .work-title { font-size: 0.98rem; }
+
+  /* Roomier tap targets in the menu */
+  .nav-link { font-size: 1.5rem; }
 }

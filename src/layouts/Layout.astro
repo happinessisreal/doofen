@@ -52,7 +52,19 @@ const year = new Date().getFullYear();
         <span class="header-logo" data-reveal>DE</span>
         <span class="header-brand" data-reveal>Doofenshmirtz Evil Inc.</span>
       </a>
-      <nav class="header-nav-links" aria-label="Main Navigation">
+      <button
+        class="nav-toggle"
+        id="nav-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="primary-nav"
+      >
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+      <nav class="header-nav-links" id="primary-nav" aria-label="Main Navigation">
         {navItems.map((item) => (
           <a
             href={item.href}
@@ -89,5 +101,33 @@ const year = new Date().getFullYear();
         <span>© {year} Doofenshmirtz Evil Inc. All rights reserved.</span>
       </div>
     </footer>
+
+    <!-- Mobile nav: hamburger toggles a full-screen slide-in menu -->
+    <script is:inline>
+      (function () {
+        var header = document.getElementById('main-header');
+        var toggle = document.getElementById('nav-toggle');
+        var nav = document.getElementById('primary-nav');
+        if (!header || !toggle || !nav) return;
+        function setOpen(open) {
+          header.classList.toggle('nav-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+          document.body.style.overflow = open ? 'hidden' : '';
+        }
+        toggle.addEventListener('click', function () {
+          setOpen(!header.classList.contains('nav-open'));
+        });
+        nav.addEventListener('click', function (e) {
+          if (e.target.closest('a')) setOpen(false);
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') setOpen(false);
+        });
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) setOpen(false);
+        });
+      })();
+    </script>
   </body>
 </html>
