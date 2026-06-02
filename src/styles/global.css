@@ -338,35 +338,6 @@ html, body {
   color: #ffffff;
 }
 
-/* ─── Mobile nav toggle (hamburger) — hidden on desktop ─── */
-.nav-toggle {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 12;
-}
-.nav-toggle-bar {
-  display: block;
-  width: 26px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--color-violet-bright);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, background-color 0.2s ease;
-}
-.nav-toggle:hover .nav-toggle-bar { background: #fff; }
-/* Morph the three bars into a clean, centred X (gap 6 + height 2 → 8px to centre) */
-.site-header.nav-open .nav-toggle-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.site-header.nav-open .nav-toggle-bar:nth-child(2) { opacity: 0; transform: scaleX(0.3); }
-.site-header.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
 /* ─── Content sections ─── */
 .section-panel {
   position: relative;
@@ -542,6 +513,9 @@ html, body {
 .footer-col-right {
   text-align: right;
 }
+.footer-home { text-decoration: none; }
+.footer-home .footer-label { transition: color 0.3s ease; }
+.footer-home:hover .footer-label { color: #fff; }
 .footer-label {
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -965,59 +939,8 @@ a.header-left { text-decoration: none; }
 
 /* Mobile (≤ 768px) */
 @media (max-width: 768px) {
-  .site-header {
-    padding: 0.9rem 1.25rem;
-    flex-wrap: nowrap;
-    gap: 0.75rem;
-    /* Drop the blur here: backdrop-filter would make the header the containing
-       block for the fixed nav overlay, clipping it to the header's height. */
-    background: rgba(3, 1, 7, 0.92);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .header-brand {
-    font-size: 0.78rem;
-    letter-spacing: 2px;
-  }
-
-  /* Keep the logo/brand above the slide-in overlay (same stacking context) */
-  .header-left { position: relative; z-index: 11; }
-
-  /* Reveal the hamburger; turn the link list into a slide-in overlay */
-  .nav-toggle { display: flex; }
-  .header-nav-links {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: auto;            /* content height → drops down from the top */
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    width: 100%;
-    padding: 4.8rem 1.5rem 1.6rem; /* clear the header bar, then list the links */
-    background: rgba(3, 1, 7, 0.97);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba(125, 83, 178, 0.3);
-    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55), 0 1px 0 var(--color-violet-glow);
-    transform: translateY(-110%);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 9; /* under the header bar (10) so the close button stays tappable */
-  }
-  .site-header.nav-open .header-nav-links { transform: translateY(0); }
-  .nav-link {
-    font-size: 1.35rem;
-    letter-spacing: 3px;
-    white-space: nowrap;
-    width: 100%;
-    padding: 0.9rem 0.2rem;
-    border-bottom: 1px solid rgba(125, 83, 178, 0.12);
-    color: rgba(183, 148, 214, 0.85);
-  }
-  .nav-link:last-child { border-bottom: none; }
-  .nav-link.active { color: #fff; }
-  .nav-link.active::after { display: none; }
+  /* No top navbar on mobile — the bento home + footer carry navigation */
+  .site-header { display: none; }
 
   .fixed-tagline h1 {
     font-size: 10vw;
@@ -1087,9 +1010,9 @@ a.header-left { text-decoration: none; }
     padding: 0.75rem 1.5rem;
   }
 
-  /* Content pages */
+  /* Content pages — no fixed header on mobile, so less top inset */
   .page {
-    padding: 7.5rem 1.5rem 4rem;
+    padding: 3rem 1.5rem 4rem;
   }
   .page-hero {
     margin-bottom: 2.5rem;
@@ -1144,18 +1067,6 @@ a.header-left { text-decoration: none; }
 
 /* Small mobile (≤ 480px) */
 @media (max-width: 480px) {
-  .site-header {
-    padding: 0.75rem 1rem;
-  }
-  .header-logo {
-    width: 24px; height: 24px;
-    font-size: 0.55rem;
-  }
-  .header-brand {
-    font-size: 0.62rem;
-    letter-spacing: 1.5px;
-  }
-
   .section-content {
     padding: 1.5rem 1rem;
   }
@@ -1179,7 +1090,216 @@ a.header-left { text-decoration: none; }
   .card-desc { font-size: 0.7rem; }
   .work-card { padding: 1.2rem 0.95rem; }
   .work-title { font-size: 0.98rem; }
+}
 
-  /* Roomier tap targets in the menu */
-  .nav-link { font-size: 1.5rem; }
+/* ══════════════════════════════════════════
+   MOBILE BENTO HOME
+   A from-scratch, mobile-first home. The desktop scroll-experience is hidden
+   below 768px and this grid of tiles takes over. Desktop never sees it.
+   ══════════════════════════════════════════ */
+.home-mobile { display: none; }
+
+@media (max-width: 768px) {
+  /* Swap the desktop scroll-experience for the bento */
+  .home-desktop { display: none; }
+  .home-mobile { display: grid; }
+
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    padding: 0.85rem 0.85rem 2.5rem;
+    position: relative;
+    z-index: 3;
+  }
+
+  .bento-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(125, 83, 178, 0.22);
+    background: rgba(12, 6, 20, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 8px;
+    padding: 1.05rem;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--color-violet-bright);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease, border-color 0.3s ease, background-color 0.3s ease;
+  }
+  a.bento-tile:active { transform: scale(0.985); }
+
+  /* Full-width tiles */
+  .bento-hero,
+  .bento-intro,
+  .bento-showreel,
+  .bento-chips,
+  .bento-cta { grid-column: 1 / -1; }
+
+  /* ── Hero: live monolith + kinetic headline ── */
+  .bento-hero {
+    height: 46vh;
+    min-height: 330px;
+    padding: 0;
+    justify-content: flex-end;
+  }
+  .bento-hero-canvas { position: absolute; inset: 0; z-index: 0; }
+  .bento-hero-canvas canvas { display: block; }
+  .bento-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to top,
+      rgba(6, 3, 12, 0.94) 4%,
+      rgba(6, 3, 12, 0.35) 36%,
+      transparent 60%);
+  }
+  .bento-hero-chip {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.9rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(183, 148, 214, 0.85);
+  }
+  .bento-hero-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    font-size: 0.5rem;
+    border: 1px solid rgba(125, 83, 178, 0.5);
+  }
+  .bento-hero-copy {
+    position: relative;
+    z-index: 2;
+    padding: 1.1rem;
+  }
+  .bento-hero-title {
+    font-size: 2.3rem;
+    line-height: 0.96;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .bento-hero-sub {
+    display: block;
+    margin-top: 0.55rem;
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-violet-bright);
+  }
+
+  /* ── Shared kicker/title for link & content tiles ── */
+  .bento-kicker {
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(125, 83, 178, 0.75);
+  }
+  .bento-title {
+    font-size: 1.45rem;
+    line-height: 1.02;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 400;
+  }
+
+  /* ── Square-ish nav tiles ── */
+  .bento-link {
+    min-height: 122px;
+    justify-content: flex-end;
+    gap: 0.3rem;
+  }
+  .bento-link .bento-title { margin-top: 0.2rem; }
+  .bento-arrow {
+    position: absolute;
+    top: 0.95rem;
+    right: 1rem;
+    font-size: 1rem;
+    color: var(--color-violet-bright);
+    transition: transform 0.3s ease;
+  }
+  a.bento-link:active { border-color: var(--color-violet); background: rgba(125, 83, 178, 0.12); }
+  a.bento-link:active .bento-arrow { transform: translate(2px, -2px); }
+
+  /* ── Intro blurb ── */
+  .bento-intro {
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--color-violet-bright);
+  }
+
+  /* ── Showreel / featured (wide) ── */
+  .bento-showreel {
+    min-height: 132px;
+    justify-content: flex-end;
+    background: linear-gradient(135deg, rgba(125, 83, 178, 0.22), rgba(12, 6, 20, 0.55));
+  }
+  .bento-showreel-text { display: flex; flex-direction: column; gap: 0.3rem; }
+  .bento-showreel .play-badge {
+    top: 1rem;
+    right: 1rem;
+    left: auto;
+    transform: none;
+    width: 46px;
+    height: 46px;
+  }
+
+  /* ── Service chips ── */
+  .bento-chips { gap: 0.7rem; }
+  .bento-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+  }
+  .bento-chip {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(125, 83, 178, 0.25);
+    border-radius: 4px;
+    color: rgba(183, 148, 214, 0.85);
+  }
+
+  /* ── Engage CTA ── */
+  .bento-cta {
+    min-height: 96px;
+    justify-content: center;
+    border-color: var(--color-violet);
+    background: linear-gradient(135deg, var(--color-violet), #4f3277);
+  }
+  .bento-cta-kicker {
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .bento-cta-title {
+    font-size: 1.85rem;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 400;
+    margin-top: 0.2rem;
+  }
+  .bento-cta-arrow {
+    position: absolute;
+    right: 1.1rem;
+    bottom: 1.05rem;
+    font-size: 1.35rem;
+    color: #fff;
+  }
 }

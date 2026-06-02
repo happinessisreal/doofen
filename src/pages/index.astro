@@ -1,15 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { MonolithExperience } from '../components/MonolithExperience';
+import { MonolithTile } from '../components/MonolithTile';
+import { Preloader } from '../components/Preloader';
 import { SERVICES } from '../data/services';
 
 const featuredServices = SERVICES.slice(0, 6);
 ---
 
 <Layout title="Doofenshmirtz Evil Inc. — The Digital Monolith">
-  <!-- First-paint boot overlay. Rendered as static HTML so it covers the page
-       immediately, before the client:only React island mounts (no FOUC). The
-       Preloader component then drives its progress and dissolves it. -->
+  <!-- First-paint boot overlay (mobile only). Rendered as static HTML so it
+       covers the page immediately, before the client:only island mounts (no
+       FOUC). The Preloader island then drives its progress and dissolves it. -->
   <div class="preloader" id="preloader" role="status" aria-live="polite">
     <div class="preloader-inner">
       <span class="preloader-brand">Doofenshmirtz Evil Inc.</span>
@@ -18,6 +20,16 @@ const featuredServices = SERVICES.slice(0, 6);
       <span class="preloader-pct" id="preloader-pct">000%</span>
     </div>
   </div>
+  <script is:inline>
+    // Boot sequence plays once per session — remove it immediately on repeat
+    // landings so it doesn't replay every time you come back to the home page.
+    try {
+      if (sessionStorage.getItem('de-booted')) {
+        var booted = document.getElementById('preloader');
+        if (booted && booted.parentNode) booted.parentNode.removeChild(booted);
+      }
+    } catch (e) {}
+  </script>
   <script is:inline>
     // Safety net: never leave the site hidden if the 3D island fails to load.
     setTimeout(function () {
@@ -29,10 +41,12 @@ const featuredServices = SERVICES.slice(0, 6);
     }, 9000);
   </script>
 
+  <Preloader client:only="react" />
+
+  <!-- ════════ DESKTOP: full-screen scroll-driven monolith ════════ -->
   <MonolithExperience client:only="react" />
 
-  <!-- Scroll Container -->
-  <div class="scroll-container">
+  <div class="scroll-container home-desktop">
 
     <!-- Hero -->
     <section class="section-panel" id="hero" style="height: 100vh; display: flex; align-items: flex-end; padding-bottom: 4rem;">
@@ -92,6 +106,75 @@ const featuredServices = SERVICES.slice(0, 6);
     </section>
 
   </div>
+
+  <!-- ════════ MOBILE: bento showcase home ════════ -->
+  <div class="bento home-mobile" aria-label="Doofenshmirtz Evil Inc.">
+
+    <!-- Hero tile: live monolith + kinetic headline -->
+    <section class="bento-tile bento-hero" data-reveal-scroll>
+      <div class="bento-hero-canvas"><MonolithTile client:only="react" /></div>
+      <span class="bento-hero-chip"><span class="bento-hero-mark">DE</span> Doofenshmirtz Evil Inc.</span>
+      <div class="bento-hero-copy">
+        <h1 class="bento-hero-title">Techno-Cultural<br />Partner</h1>
+        <span class="bento-hero-sub">For Your Establishments</span>
+      </div>
+    </section>
+
+    <!-- Intro blurb -->
+    <section class="bento-tile bento-intro" data-reveal-scroll>
+      We help establishments innovate, communicate, and quietly take over their
+      corner of the world — engineered in-house, end to end.
+    </section>
+
+    <!-- Work + Services -->
+    <a href="/work" class="bento-tile bento-link" data-reveal-scroll>
+      <span class="bento-kicker">The Vault</span>
+      <span class="bento-title">Work</span>
+      <span class="bento-arrow">↗</span>
+    </a>
+    <a href="/services" class="bento-tile bento-link" data-reveal-scroll>
+      <span class="bento-kicker">{SERVICES.length} disciplines</span>
+      <span class="bento-title">Services</span>
+      <span class="bento-arrow">↗</span>
+    </a>
+
+    <!-- Showreel / featured (wide) -->
+    <a href="/work" class="bento-tile bento-showreel" data-reveal-scroll>
+      <div class="bento-showreel-text">
+        <span class="bento-kicker">Selected Work</span>
+        <span class="bento-title">From the Vault</span>
+      </div>
+      <span class="play-badge">▶</span>
+    </a>
+
+    <!-- Who + About -->
+    <a href="/who-we-are" class="bento-tile bento-link" data-reveal-scroll>
+      <span class="bento-kicker">The People</span>
+      <span class="bento-title">Who We Are</span>
+      <span class="bento-arrow">↗</span>
+    </a>
+    <a href="/about" class="bento-tile bento-link" data-reveal-scroll>
+      <span class="bento-kicker">The Blueprint</span>
+      <span class="bento-title">About</span>
+      <span class="bento-arrow">↗</span>
+    </a>
+
+    <!-- Services chips -->
+    <section class="bento-tile bento-chips" data-reveal-scroll>
+      <span class="bento-kicker">From code to campaign</span>
+      <div class="bento-chip-row">
+        {featuredServices.map((s) => <span class="bento-chip">{s.name}</span>)}
+      </div>
+    </section>
+
+    <!-- Engage CTA (full, gradient) -->
+    <a href="/contact" class="bento-tile bento-cta" data-reveal-scroll>
+      <span class="bento-cta-kicker">Engagement</span>
+      <span class="bento-cta-title">Engage Us</span>
+      <span class="bento-cta-arrow">→</span>
+    </a>
+
+  </div>
 </Layout>
 
 <script>
@@ -101,47 +184,53 @@ const featuredServices = SERVICES.slice(0, 6);
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // GSAP drives the scroll-linked 3D camera.
-  ScrollTrigger.create({
-    trigger: '.scroll-container',
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 0.5,
-    onUpdate: (self) => {
-      (window as any).scrollProgress = self.progress;
-    },
-  });
+  const isDesktop = window.innerWidth > 768;
+
+  // GSAP drives the scroll-linked 3D camera — desktop only (mobile uses the bento).
+  if (isDesktop) {
+    ScrollTrigger.create({
+      trigger: '.scroll-container',
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 0.5,
+      onUpdate: (self) => {
+        (window as any).scrollProgress = self.progress;
+      },
+    });
+  }
 
   // anime.js entrance + reveals + magnetic + progress bar (shared across pages).
   initSite();
   initScrollCue();
 
-  // Populate the work teaser with live categories from the admin-managed data.
-  (async () => {
-    const list = document.getElementById('teaser-list');
-    if (!list) return;
-    try {
-      const res = await fetch('/api/categories');
-      const { categories } = await res.json() as {
-        categories: { name: string; slug: string; description: string | null; works: unknown[] }[];
-      };
-      const withWorks = categories.filter((c) => c.works.length > 0);
-      if (withWorks.length === 0) {
+  // Populate the desktop work teaser with live categories (desktop only).
+  if (isDesktop) {
+    (async () => {
+      const list = document.getElementById('teaser-list');
+      if (!list) return;
+      try {
+        const res = await fetch('/api/categories');
+        const { categories } = await res.json() as {
+          categories: { name: string; slug: string; description: string | null; works: unknown[] }[];
+        };
+        const withWorks = categories.filter((c) => c.works.length > 0);
+        if (withWorks.length === 0) {
+          list.innerHTML = '<li class="vault-empty">Work is being catalogued — view the vault soon.</li>';
+          return;
+        }
+        list.innerHTML = withWorks.slice(0, 5).map((c, i) => `
+          <li class="vault-item">
+            <a class="vault-link" href="/work/${c.slug}">
+              <span class="vault-index">${String(i + 1).padStart(2, '0')}</span>
+              <span class="vault-text">
+                <span class="vault-name">${c.name}</span>
+                <span class="vault-desc">${c.description ?? `${c.works.length} piece${c.works.length === 1 ? '' : 's'}`}</span>
+              </span>
+            </a>
+          </li>`).join('');
+      } catch {
         list.innerHTML = '<li class="vault-empty">Work is being catalogued — view the vault soon.</li>';
-        return;
       }
-      list.innerHTML = withWorks.slice(0, 5).map((c, i) => `
-        <li class="vault-item">
-          <a class="vault-link" href="/work/${c.slug}">
-            <span class="vault-index">${String(i + 1).padStart(2, '0')}</span>
-            <span class="vault-text">
-              <span class="vault-name">${c.name}</span>
-              <span class="vault-desc">${c.description ?? `${c.works.length} piece${c.works.length === 1 ? '' : 's'}`}</span>
-            </span>
-          </a>
-        </li>`).join('');
-    } catch {
-      list.innerHTML = '<li class="vault-empty">Work is being catalogued — view the vault soon.</li>';
-    }
-  })();
+    })();
+  }
 </script>

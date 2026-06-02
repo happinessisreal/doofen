@@ -24,6 +24,8 @@ export const Preloader = (): null => {
     if (active) return;
     const el = document.getElementById('preloader');
     if (!el || el.classList.contains('preloader--done')) return;
+    // Remember that the boot sequence has played this session.
+    try { sessionStorage.setItem('de-booted', '1'); } catch (e) { /* ignore */ }
     const text = document.getElementById('preloader-text');
     if (text) text.textContent = 'Monolith Online';
     const wait = Math.max(0, 650 - (Date.now() - mountedAt.current));
