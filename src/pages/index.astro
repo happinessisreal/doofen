@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { MonolithExperience } from '../components/MonolithExperience';
-import { MonolithTile } from '../components/MonolithTile';
+import { MonolithMobile } from '../components/MonolithMobile';
 import { Preloader } from '../components/Preloader';
 import { SERVICES } from '../data/services';
 
@@ -107,72 +107,61 @@ const featuredServices = SERVICES.slice(0, 6);
 
   </div>
 
-  <!-- ════════ MOBILE: bento showcase home ════════ -->
-  <div class="bento home-mobile" aria-label="Doofenshmirtz Evil Inc.">
+  <!-- ════════ MOBILE: scrollytelling single-canvas ════════ -->
+  <div class="home-mobile scrolly" aria-label="Doofenshmirtz Evil Inc.">
 
-    <!-- Hero tile: live monolith + kinetic headline -->
-    <section class="bento-tile bento-hero" data-reveal-scroll>
-      <div class="bento-hero-canvas"><MonolithTile client:only="react" /></div>
-      <span class="bento-hero-chip"><span class="bento-hero-mark">DE</span> Doofenshmirtz Evil Inc.</span>
-      <div class="bento-hero-copy">
-        <h1 class="bento-hero-title">Techno-Cultural<br />Partner</h1>
-        <span class="bento-hero-sub">For Your Establishments</span>
+    <!-- Full-bleed, fixed monolith behind the captions -->
+    <div class="mobile-canvas-wrapper"><MonolithMobile client:only="react" /></div>
+
+    <!-- Caption panels fade in/out over the 3D as you scroll -->
+    <section class="scrolly-panel">
+      <div class="scrolly-caption">
+        <span class="scrolly-brand">Doofenshmirtz Evil Inc.</span>
+        <h1 class="scrolly-title">Techno-Cultural<br />Partner</h1>
+        <p class="scrolly-sub">For your establishments.</p>
+        <span class="scrolly-hint">Scroll <span aria-hidden="true">↓</span></span>
       </div>
     </section>
 
-    <!-- Intro blurb -->
-    <section class="bento-tile bento-intro" data-reveal-scroll>
-      We help establishments innovate, communicate, and quietly take over their
-      corner of the world — engineered in-house, end to end.
-    </section>
-
-    <!-- Work + Services -->
-    <a href="/work" class="bento-tile bento-link" data-reveal-scroll>
-      <span class="bento-kicker">The Vault</span>
-      <span class="bento-title">Work</span>
-      <span class="bento-arrow">↗</span>
-    </a>
-    <a href="/services" class="bento-tile bento-link" data-reveal-scroll>
-      <span class="bento-kicker">{SERVICES.length} disciplines</span>
-      <span class="bento-title">Services</span>
-      <span class="bento-arrow">↗</span>
-    </a>
-
-    <!-- Showreel / featured (wide) -->
-    <a href="/work" class="bento-tile bento-showreel" data-reveal-scroll>
-      <div class="bento-showreel-text">
-        <span class="bento-kicker">Selected Work</span>
-        <span class="bento-title">From the Vault</span>
-      </div>
-      <span class="play-badge">▶</span>
-    </a>
-
-    <!-- Who + About -->
-    <a href="/who-we-are" class="bento-tile bento-link" data-reveal-scroll>
-      <span class="bento-kicker">The People</span>
-      <span class="bento-title">Who We Are</span>
-      <span class="bento-arrow">↗</span>
-    </a>
-    <a href="/about" class="bento-tile bento-link" data-reveal-scroll>
-      <span class="bento-kicker">The Blueprint</span>
-      <span class="bento-title">About</span>
-      <span class="bento-arrow">↗</span>
-    </a>
-
-    <!-- Services chips -->
-    <section class="bento-tile bento-chips" data-reveal-scroll>
-      <span class="bento-kicker">From code to campaign</span>
-      <div class="bento-chip-row">
-        {featuredServices.map((s) => <span class="bento-chip">{s.name}</span>)}
+    <section class="scrolly-panel">
+      <div class="scrolly-caption">
+        <span class="scrolly-kicker">What We Do</span>
+        <h2 class="scrolly-title scrolly-title--sm">From Code<br />to Campaign</h2>
+        <div class="scrolly-chips">
+          {featuredServices.map((s) => <span class="scrolly-chip">{s.name}</span>)}
+        </div>
+        <a href="/services" class="cta">All Services</a>
       </div>
     </section>
 
-    <!-- Engage CTA (full, gradient) -->
-    <a href="/contact" class="bento-tile bento-cta" data-reveal-scroll>
-      <span class="bento-cta-kicker">Engagement</span>
-      <span class="bento-cta-title">Engage Us</span>
-      <span class="bento-cta-arrow">→</span>
-    </a>
+    <section class="scrolly-panel">
+      <div class="scrolly-caption">
+        <span class="scrolly-kicker">Selected Work</span>
+        <h2 class="scrolly-title scrolly-title--sm">From the Vault</h2>
+        <p class="scrolly-sub">Builds, films, and campaigns we've shipped.</p>
+        <a href="/work" class="cta">View Work</a>
+      </div>
+    </section>
+
+    <section class="scrolly-panel">
+      <div class="scrolly-caption">
+        <span class="scrolly-kicker">The Collective</span>
+        <h2 class="scrolly-title scrolly-title--sm">Who We Are</h2>
+        <p class="scrolly-sub">A small, dangerous collective of engineers, storytellers, and strategists.</p>
+        <div class="scrolly-links">
+          <a href="/who-we-are" class="cta">The People</a>
+          <a href="/about" class="cta">The Blueprint</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="scrolly-panel">
+      <div class="scrolly-caption">
+        <span class="scrolly-kicker">Engagement</span>
+        <h2 class="scrolly-title scrolly-title--sm">Let's build something<br />unreasonable</h2>
+        <a href="/contact" class="cta cta-primary">Engage Us</a>
+      </div>
+    </section>
 
   </div>
 </Layout>
@@ -186,7 +175,7 @@ const featuredServices = SERVICES.slice(0, 6);
 
   const isDesktop = window.innerWidth > 768;
 
-  // GSAP drives the scroll-linked 3D camera — desktop only (mobile uses the bento).
+  // GSAP drives the scroll-linked 3D camera — desktop only.
   if (isDesktop) {
     ScrollTrigger.create({
       trigger: '.scroll-container',
@@ -197,6 +186,30 @@ const featuredServices = SERVICES.slice(0, 6);
         (window as any).scrollProgress = self.progress;
       },
     });
+  } else {
+    // Mobile scrollytelling: window scroll drives the camera and fades the
+    // caption panels in/out as each one passes the centre of the viewport.
+    const captions = Array.from(document.querySelectorAll<HTMLElement>('.scrolly-caption'));
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      const max = document.documentElement.scrollHeight - vh;
+      (window as any).scrollProgress = max > 0 ? window.scrollY / max : 0;
+      const mid = vh / 2;
+      for (const cap of captions) {
+        const r = cap.getBoundingClientRect();
+        const center = r.top + r.height / 2;
+        const o = Math.max(0, 1 - Math.abs(center - mid) / (vh * 0.55));
+        cap.style.opacity = String(o);
+        cap.style.transform = `translateY(${(center - mid) * 0.06}px)`;
+        cap.style.pointerEvents = o > 0.05 ? 'auto' : 'none'; // don't tap faded captions
+      }
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
   }
 
   // anime.js entrance + reveals + magnetic + progress bar (shared across pages).

@@ -28,3 +28,7 @@ Thumbs.db
 # Environment
 .env
 .env.*
+
+# Local dev server log + screenshot scratch
+dev-server.log
+.shots/

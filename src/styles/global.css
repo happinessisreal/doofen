@@ -1093,213 +1093,117 @@ a.header-left { text-decoration: none; }
 }
 
 /* ══════════════════════════════════════════
-   MOBILE BENTO HOME
-   A from-scratch, mobile-first home. The desktop scroll-experience is hidden
-   below 768px and this grid of tiles takes over. Desktop never sees it.
+   MOBILE SCROLLYTELLING HOME
+   A full-bleed, fixed monolith behind caption panels that fade in/out as you
+   scroll past it. The desktop scroll-experience is hidden below 768px.
    ══════════════════════════════════════════ */
 .home-mobile { display: none; }
 
 @media (max-width: 768px) {
-  /* Swap the desktop scroll-experience for the bento */
+  /* Swap the desktop scroll-experience for the scrollytelling stage */
   .home-desktop { display: none; }
-  .home-mobile { display: grid; }
+  .home-mobile { display: block; }
 
-  .bento {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    padding: 0.85rem 0.85rem 2.5rem;
+  /* Fixed monolith behind the captions (touches pass through to scroll) */
+  .mobile-canvas-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .mobile-canvas-wrapper canvas { display: block; }
+
+  /* One full-height stage per caption */
+  .scrolly-panel {
     position: relative;
     z-index: 3;
-  }
-
-  .bento-tile {
-    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
-    flex-direction: column;
-    border: 1px solid rgba(125, 83, 178, 0.22);
-    background: rgba(12, 6, 20, 0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-radius: 8px;
-    padding: 1.05rem;
-    overflow: hidden;
-    text-decoration: none;
-    color: var(--color-violet-bright);
-    -webkit-tap-highlight-color: transparent;
-    transition: transform 0.2s ease, border-color 0.3s ease, background-color 0.3s ease;
-  }
-  a.bento-tile:active { transform: scale(0.985); }
-
-  /* Full-width tiles */
-  .bento-hero,
-  .bento-intro,
-  .bento-showreel,
-  .bento-chips,
-  .bento-cta { grid-column: 1 / -1; }
-
-  /* ── Hero: live monolith + kinetic headline ── */
-  .bento-hero {
-    height: 46vh;
-    min-height: 330px;
-    padding: 0;
-    justify-content: flex-end;
-  }
-  .bento-hero-canvas { position: absolute; inset: 0; z-index: 0; }
-  .bento-hero-canvas canvas { display: block; }
-  .bento-hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(to top,
-      rgba(6, 3, 12, 0.94) 4%,
-      rgba(6, 3, 12, 0.35) 36%,
-      transparent 60%);
-  }
-  .bento-hero-chip {
-    position: absolute;
-    top: 0.85rem;
-    left: 0.9rem;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.58rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(183, 148, 214, 0.85);
-  }
-  .bento-hero-mark {
-    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
-    font-size: 0.5rem;
-    border: 1px solid rgba(125, 83, 178, 0.5);
+    padding: 2rem 1.5rem;
   }
-  .bento-hero-copy {
+
+  /* Frosted card so the type stays legible over the busy wireframe behind it */
+  .scrolly-caption {
     position: relative;
-    z-index: 2;
-    padding: 1.1rem;
+    width: min(92%, 30rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    text-align: center;
+    padding: 1.7rem 1.5rem;
+    background: rgba(7, 3, 13, 0.66);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(125, 83, 178, 0.22);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    opacity: 0;               /* JS fades these in/out by scroll position */
+    will-change: opacity, transform;
   }
-  .bento-hero-title {
-    font-size: 2.3rem;
-    line-height: 0.96;
+
+  .scrolly-brand {
+    font-size: 0.62rem;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    font-weight: 400;
-    color: #fff;
-    letter-spacing: 0.5px;
+    color: var(--color-violet-bright);
   }
-  .bento-hero-sub {
-    display: block;
-    margin-top: 0.55rem;
-    font-size: 0.68rem;
+  .scrolly-kicker {
+    font-size: 0.62rem;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: var(--color-violet-bright);
+    color: rgba(125, 83, 178, 0.8);
   }
-
-  /* ── Shared kicker/title for link & content tiles ── */
-  .bento-kicker {
-    font-size: 0.58rem;
-    letter-spacing: 2px;
+  .scrolly-title {
+    font-size: 2.15rem;
+    line-height: 1.0;
     text-transform: uppercase;
-    color: rgba(125, 83, 178, 0.75);
-  }
-  .bento-title {
-    font-size: 1.45rem;
-    line-height: 1.02;
-    text-transform: uppercase;
-    color: #fff;
     font-weight: 400;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.7);
   }
-
-  /* ── Square-ish nav tiles ── */
-  .bento-link {
-    min-height: 122px;
-    justify-content: flex-end;
-    gap: 0.3rem;
-  }
-  .bento-link .bento-title { margin-top: 0.2rem; }
-  .bento-arrow {
-    position: absolute;
-    top: 0.95rem;
-    right: 1rem;
-    font-size: 1rem;
+  .scrolly-title--sm { font-size: 1.8rem; }
+  .scrolly-sub {
+    font-size: 0.9rem;
+    line-height: 1.55;
     color: var(--color-violet-bright);
-    transition: transform 0.3s ease;
+    max-width: 30ch;
   }
-  a.bento-link:active { border-color: var(--color-violet); background: rgba(125, 83, 178, 0.12); }
-  a.bento-link:active .bento-arrow { transform: translate(2px, -2px); }
+  .scrolly-hint {
+    margin-top: 0.4rem;
+    font-size: 0.62rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(183, 148, 214, 0.5);
+    animation: scrolly-bob 1.8s ease-in-out infinite;
+  }
+  @keyframes scrolly-bob { 50% { transform: translateY(4px); opacity: 0.55; } }
 
-  /* ── Intro blurb ── */
-  .bento-intro {
-    font-size: 0.86rem;
-    line-height: 1.6;
-    color: var(--color-violet-bright);
-  }
-
-  /* ── Showreel / featured (wide) ── */
-  .bento-showreel {
-    min-height: 132px;
-    justify-content: flex-end;
-    background: linear-gradient(135deg, rgba(125, 83, 178, 0.22), rgba(12, 6, 20, 0.55));
-  }
-  .bento-showreel-text { display: flex; flex-direction: column; gap: 0.3rem; }
-  .bento-showreel .play-badge {
-    top: 1rem;
-    right: 1rem;
-    left: auto;
-    transform: none;
-    width: 46px;
-    height: 46px;
-  }
-
-  /* ── Service chips ── */
-  .bento-chips { gap: 0.7rem; }
-  .bento-chip-row {
+  .scrolly-chips {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.4rem;
-    margin-top: 0.2rem;
+    max-width: 28ch;
   }
-  .bento-chip {
+  .scrolly-chip {
     font-size: 0.6rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    padding: 0.35rem 0.6rem;
-    border: 1px solid rgba(125, 83, 178, 0.25);
+    padding: 0.32rem 0.6rem;
+    border: 1px solid rgba(125, 83, 178, 0.3);
     border-radius: 4px;
     color: rgba(183, 148, 214, 0.85);
   }
+  .scrolly-links { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+  .scrolly-caption .cta { margin-top: 0.3rem; }
 
-  /* ── Engage CTA ── */
-  .bento-cta {
-    min-height: 96px;
-    justify-content: center;
-    border-color: var(--color-violet);
-    background: linear-gradient(135deg, var(--color-violet), #4f3277);
-  }
-  .bento-cta-kicker {
-    font-size: 0.58rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
-  }
-  .bento-cta-title {
-    font-size: 1.85rem;
-    text-transform: uppercase;
-    color: #fff;
-    font-weight: 400;
-    margin-top: 0.2rem;
-  }
-  .bento-cta-arrow {
-    position: absolute;
-    right: 1.1rem;
-    bottom: 1.05rem;
-    font-size: 1.35rem;
-    color: #fff;
+  @media (prefers-reduced-motion: reduce) {
+    .scrolly-caption { opacity: 1 !important; transform: none !important; }
+    .scrolly-hint { animation: none; }
   }
 }
