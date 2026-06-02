@@ -7,6 +7,28 @@ const featuredServices = SERVICES.slice(0, 6);
 ---
 
 <Layout title="Doofenshmirtz Evil Inc. — The Digital Monolith">
+  <!-- First-paint boot overlay. Rendered as static HTML so it covers the page
+       immediately, before the client:only React island mounts (no FOUC). The
+       Preloader component then drives its progress and dissolves it. -->
+  <div class="preloader" id="preloader" role="status" aria-live="polite">
+    <div class="preloader-inner">
+      <span class="preloader-brand">Doofenshmirtz Evil Inc.</span>
+      <span class="preloader-status"><span id="preloader-text">Initializing Monolith</span><span class="preloader-caret">▌</span></span>
+      <div class="preloader-bar"><span class="preloader-bar-fill" id="preloader-bar"></span></div>
+      <span class="preloader-pct" id="preloader-pct">000%</span>
+    </div>
+  </div>
+  <script is:inline>
+    // Safety net: never leave the site hidden if the 3D island fails to load.
+    setTimeout(function () {
+      var el = document.getElementById('preloader');
+      if (el && !el.classList.contains('preloader--done')) {
+        el.classList.add('preloader--done');
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1000);
+      }
+    }, 9000);
+  </script>
+
   <MonolithExperience client:only="react" />
 
   <!-- Scroll Container -->

@@ -179,6 +179,10 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .preloader-caret { animation: none; }
 }
+/* Boot sequence is a mobile-only flourish — desktop loads straight into the scene */
+@media (min-width: 769px) {
+  .preloader { display: none !important; }
+}
 
 /* ─── Scroll progress bar ─── */
 .scroll-progress {
