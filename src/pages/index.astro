@@ -8,13 +8,13 @@ import { SERVICES } from '../data/services';
 const featuredServices = SERVICES.slice(0, 6);
 ---
 
-<Layout title="Doofenshmirtz Evil Inc. — The Digital Monolith">
+<Layout title="DE Inc. — The Digital Monolith">
   <!-- First-paint boot overlay (mobile only). Rendered as static HTML so it
        covers the page immediately, before the client:only island mounts (no
        FOUC). The Preloader island then drives its progress and dissolves it. -->
   <div class="preloader" id="preloader" role="status" aria-live="polite">
     <div class="preloader-inner">
-      <span class="preloader-brand">Doofenshmirtz Evil Inc.</span>
+      <span class="preloader-brand">DE Inc.</span>
       <span class="preloader-status"><span id="preloader-text">Initializing Monolith</span><span class="preloader-caret">▌</span></span>
       <div class="preloader-bar"><span class="preloader-bar-fill" id="preloader-bar"></span></div>
       <span class="preloader-pct" id="preloader-pct">000%</span>
@@ -51,7 +51,7 @@ const featuredServices = SERVICES.slice(0, 6);
     <!-- Hero -->
     <section class="section-panel" id="hero" style="height: 100vh; display: flex; align-items: flex-end; padding-bottom: 4rem;">
       <div class="section-content">
-        <span class="section-label" data-reveal>Doofenshmirtz Evil Inc.</span>
+        <span class="section-label" data-reveal>DE Inc.</span>
         <h2 class="section-heading hero-heading">Techno-Cultural Partner for Your Establishments</h2>
         <p class="section-body" data-reveal>
           Dedicated to helping organizations innovate, communicate, and grow in the digital arena. By combining field data and insights, our technical experience, and creative solutions, we strategize for your establishments.
@@ -108,7 +108,7 @@ const featuredServices = SERVICES.slice(0, 6);
   </div>
 
   <!-- ════════ MOBILE: scrollytelling single-canvas ════════ -->
-  <div class="home-mobile scrolly" aria-label="Doofenshmirtz Evil Inc.">
+  <div class="home-mobile scrolly" aria-label="DE Inc.">
 
     <!-- Full-bleed, fixed monolith behind the captions -->
     <div class="mobile-canvas-wrapper"><MonolithMobile client:only="react" /></div>
@@ -116,7 +116,7 @@ const featuredServices = SERVICES.slice(0, 6);
     <!-- Caption panels fade in/out over the 3D as you scroll -->
     <section class="scrolly-panel">
       <div class="scrolly-caption">
-        <span class="scrolly-brand">Doofenshmirtz Evil Inc.</span>
+        <span class="scrolly-brand">DE Inc.</span>
         <h1 class="scrolly-title">Techno-Cultural<br />Partner</h1>
         <p class="scrolly-sub">For your establishments.</p>
         <span class="scrolly-hint">Scroll <span aria-hidden="true">↓</span></span>

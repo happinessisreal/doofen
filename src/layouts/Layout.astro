@@ -8,7 +8,7 @@ interface Props {
 
 const {
   title,
-  description = "Doofenshmirtz Evil Inc. — Techno-cultural partner for establishments. Edge-ready digital solutions and spatial installations."
+  description = "DE Inc. — Techno-cultural partner for establishments. Edge-ready digital solutions and spatial installations."
 } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -48,9 +48,9 @@ const year = new Date().getFullYear();
 
     <!-- Minimal top bar -->
     <header class="site-header" id="main-header">
-      <a href="/" class="header-left" aria-label="Doofenshmirtz Evil Inc. — Home">
+      <a href="/" class="header-left" aria-label="DE Inc. — Home">
         <span class="header-logo" data-reveal>DE</span>
-        <span class="header-brand" data-reveal>Doofenshmirtz Evil Inc.</span>
+        <span class="header-brand" data-reveal>DE Inc.</span>
       </a>
       <nav class="header-nav-links" id="primary-nav" aria-label="Main Navigation">
         {navItems.map((item) => (
@@ -71,8 +71,8 @@ const year = new Date().getFullYear();
     <!-- Footer -->
     <footer class="site-footer">
       <div class="footer-inner">
-        <a href="/" class="footer-col footer-home" aria-label="Doofenshmirtz Evil Inc. — Home">
-          <span class="footer-label">Doofenshmirtz Evil Inc.</span>
+        <a href="/" class="footer-col footer-home" aria-label="DE Inc. — Home">
+          <span class="footer-label">DE Inc.</span>
           <span class="footer-sub">Techno-cultural Partner for Establishments</span>
         </a>
         <nav class="footer-nav" aria-label="Footer Navigation">
@@ -82,11 +82,11 @@ const year = new Date().getFullYear();
         </nav>
         <div class="footer-col footer-col-right">
           <span class="footer-label">Get in Touch</span>
-          <span class="footer-sub">director@doofenshmirtz-evil.inc</span>
+          <span class="footer-sub">director@de.inc</span>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© {year} Doofenshmirtz Evil Inc. All rights reserved.</span>
+        <span>© {year} DE Inc. All rights reserved.</span>
       </div>
     </footer>
   </body>
